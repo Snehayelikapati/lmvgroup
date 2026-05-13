@@ -2,9 +2,21 @@ import React, { useState, useEffect } from 'react'
 import JobPosting from './JobPosting'
 import CandidateTracking from './CandidateList'
 import InterviewScheduling from './InterviewScheduler'
-
+import { useLocation } from 'react-router-dom'
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('jobposting')
+  // const [activeTab, setActiveTab] = useState('jobposting')
+  const location = useLocation()
+const [activeTab, setActiveTab] = useState(() => {
+  return (
+    location.state?.activeTab ||
+    localStorage.getItem('activeTab') ||
+    'jobposting'
+  )
+})
+
+useEffect(() => {
+  localStorage.setItem('activeTab', activeTab)
+}, [activeTab])
   const [jobs, setJobs] = useState([])
 
   useEffect(() => {
@@ -32,6 +44,7 @@ const Dashboard = () => {
       <div className="max-w-6xl mx-auto px-4 mt-6">
         <div className="flex gap-2 border-b bg-white rounded-t-lg">
           <button
+          type="button"
             onClick={() => setActiveTab('jobposting')}
             className={`px-6 py-3 font-medium transition ${
               activeTab === 'jobposting'
@@ -42,6 +55,7 @@ const Dashboard = () => {
             📝 Job Posting
           </button>
           <button
+          type="button"
             onClick={() => setActiveTab('candidatetracking')}
             className={`px-6 py-3 font-medium transition ${
               activeTab === 'candidatetracking'
@@ -52,6 +66,7 @@ const Dashboard = () => {
             👥 Candidate Tracking
           </button>
           <button
+          type="button"
             onClick={() => setActiveTab('interviewscheduling')}
             className={`px-6 py-3 font-medium transition ${
               activeTab === 'interviewscheduling'
@@ -62,6 +77,7 @@ const Dashboard = () => {
             📅 Interview Scheduling
           </button>
           <button
+          type="button"
             onClick={() => setActiveTab('myjobs')}
             className={`px-6 py-3 font-medium transition ${
               activeTab === 'myjobs'
@@ -97,7 +113,7 @@ const Dashboard = () => {
                       <p className="text-gray-600 text-sm">{job.location || 'Location not specified'}</p>
                       <p className="text-gray-500 text-sm mt-1">{job.description?.substring(0, 100)}...</p>
                       <span className="inline-block mt-2 bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">
-                        {job.job_type}
+                        {job.jobType}
                       </span>
                     </div>
                   ))}

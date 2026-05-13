@@ -28,6 +28,7 @@ const Home = () => {
             {/* Job Posting Card - Clickable */}
             <Link 
               to="/dashboard" 
+               state={{ activeTab: 'jobposting' }}
               className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer block"
             >
               <div className="text-4xl mb-4">📝</div>
@@ -39,6 +40,7 @@ const Home = () => {
             {/* Candidate Tracking Card - Clickable */}
             <Link 
               to="/dashboard" 
+                state={{ activeTab: 'candidatetracking' }}
               className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer block"
             >
               <div className="text-4xl mb-4">👥</div>
@@ -50,6 +52,7 @@ const Home = () => {
             {/* Interview Scheduling Card - Clickable */}
             <Link 
               to="/dashboard" 
+               state={{ activeTab: 'interviewscheduling' }}
               className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer block"
             >
               <div className="text-4xl mb-4">📅</div>
