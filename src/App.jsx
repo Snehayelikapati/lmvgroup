@@ -1,13 +1,15 @@
 // src/App.jsx
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-import Header from './components/Header'
+// import Header from './components/Header'
 import Footer from './components/Footer'
 import Dashboard from './pages/Dashboard'
 import Home from './components/Home'
 import About from './components/About'
 import Contact from './components/Contact'
 import Privacy from './components/Privacy'
+import Login from './pages/Login'
+import Register from './pages/Register'
 
 const NotFound = () => {
   return (
@@ -28,7 +30,7 @@ const App = () => {
   return (
     <Router>
       <div className="min-h-screen flex flex-col bg-gray-50">
-        <Header />
+        {/* <Header /> */}
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -36,6 +38,8 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

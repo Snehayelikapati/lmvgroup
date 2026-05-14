@@ -1,145 +1,228 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
+import {
+  Briefcase,
+  MapPin,
+  IndianRupee,
+  FileText,
+  ClipboardList,
+  Layers3,
+} from "lucide-react";
 
 const JobPosting = ({ onJobPosted }) => {
   const [form, setForm] = useState({
-    title: '',
-    description: '',
-    requirements: '',
-    location: '',
-    salary: '',
-    jobType: 'Full-time'
-  })
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState('')
+    title: "",
+    description: "",
+    requirements: "",
+    location: "",
+    salary: "",
+    jobType: "Full-time",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    setLoading(true)
-    
+    e.preventDefault();
+
+    setLoading(true);
+
     const newJob = {
       id: Date.now(),
       ...form,
-      createdAt: new Date().toISOString()
-    }
-    
-    onJobPosted(newJob)
-    setSuccess('✅ Job posted successfully!')
+      createdAt: new Date().toISOString(),
+    };
+
+    onJobPosted(newJob);
+
+    setSuccess("✅ Job posted successfully!");
+
     setForm({
-      title: '',
-      description: '',
-      requirements: '',
-      location: '',
-      salary: '',
-      jobType: 'Full-time'
-    })
-    
-    setTimeout(() => setSuccess(''), 3000)
-    setLoading(false)
-  }
+      title: "",
+      description: "",
+      requirements: "",
+      location: "",
+      salary: "",
+      jobType: "Full-time",
+    });
+
+    setTimeout(() => {
+      setSuccess("");
+    }, 3000);
+
+    setLoading(false);
+  };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">📝 Post a New Job</h2>
-      
-      {success && (
-        <div className="bg-green-100 text-green-700 p-3 rounded-lg mb-4">
-          {success}
-        </div>
-      )}
+    <div className="min-h-screen bg-[#f5f5f3] p-4 md:p-8">
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Job Title *</label>
-          <input
-            type="text"
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g., Senior Frontend Developer"
-          />
-        </div>
+      <div className="max-w-5xl mx-auto">
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-          <textarea
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            required
-            rows="4"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            placeholder="Job description..."
-          />
-        </div>
+        {/* TOP HERO SECTION */}
+        {/* <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-[40px] p-8 md:p-12 text-white mb-10 relative overflow-hidden shadow-2xl">
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Requirements *</label>
-          <textarea
-            name="requirements"
-            value={form.requirements}
-            onChange={handleChange}
-            required
-            rows="3"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            placeholder="Skills, experience, qualifications..."
-          />
-        </div>
+          <div className="absolute top-0 right-0 w-72 h-72 bg-lime-400/20 rounded-full blur-3xl"></div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-            <input
-              type="text"
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              placeholder="Remote / Hyderabad / Bangalore"
-            />
+          <div className="relative z-10">
+            <span className="bg-lime-400 text-black px-4 py-2 rounded-full text-sm font-semibold">
+              Recruitment Portal
+            </span>
+
+            <h1 className="text-4xl md:text-5xl font-bold mt-6 mb-4">
+              Post a <span className="text-lime-400">New Job</span>
+            </h1>
+
+            <p className="text-gray-300 text-lg max-w-2xl">
+              Create and publish job opportunities to attract the best
+              candidates for your company.
+            </p>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Salary Range</label>
-            <input
-              type="text"
-              name="salary"
-              value={form.salary}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              placeholder="₹10L - ₹15L per annum"
-            />
+        </div> */}
+
+        {/* SUCCESS MESSAGE */}
+        {success && (
+          <div className="bg-green-100 text-green-700 p-4 rounded-2xl mb-6 shadow-md font-medium">
+            {success}
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Job Type</label>
-            <select
-              name="jobType"
-              value={form.jobType}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+        )}
+
+        {/* FORM CONTAINER */}
+        <div className="bg-white rounded-[35px] shadow-2xl p-6 md:p-10">
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+
+            {/* JOB TITLE */}
+            <div>
+              <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                <Briefcase size={18} className="text-lime-600" />
+                Job Title *
+              </label>
+
+              <input
+                type="text"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                required
+                placeholder="e.g. Senior Frontend Developer"
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+              />
+            </div>
+
+            {/* DESCRIPTION */}
+            <div>
+              <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                <FileText size={18} className="text-lime-600" />
+                Description *
+              </label>
+
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                required
+                rows="5"
+                placeholder="Enter job description..."
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+              />
+            </div>
+
+            {/* REQUIREMENTS */}
+            <div>
+              <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                <ClipboardList size={18} className="text-lime-600" />
+                Requirements *
+              </label>
+
+              <textarea
+                name="requirements"
+                value={form.requirements}
+                onChange={handleChange}
+                required
+                rows="4"
+                placeholder="Skills, experience, qualifications..."
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+              />
+            </div>
+
+            {/* GRID SECTION */}
+            <div className="grid md:grid-cols-3 gap-5">
+
+              {/* LOCATION */}
+              <div>
+                <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                  <MapPin size={18} className="text-lime-600" />
+                  Location
+                </label>
+
+                <input
+                  type="text"
+                  name="location"
+                  value={form.location}
+                  onChange={handleChange}
+                  placeholder="Remote / Hyderabad"
+                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+                />
+              </div>
+
+              {/* SALARY */}
+              <div>
+                <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                  <IndianRupee size={18} className="text-lime-600" />
+                  Salary Range
+                </label>
+
+                <input
+                  type="text"
+                  name="salary"
+                  value={form.salary}
+                  onChange={handleChange}
+                  placeholder="₹10L - ₹15L"
+                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+                />
+              </div>
+
+              {/* JOB TYPE */}
+              <div>
+                <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                  <Layers3 size={18} className="text-lime-600" />
+                  Job Type
+                </label>
+
+                <select
+                  name="jobType"
+                  value={form.jobType}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+                >
+                  <option>Full-time</option>
+                  <option>Part-time</option>
+                  <option>Contract</option>
+                  <option>Internship</option>
+                </select>
+              </div>
+            </div>
+
+            {/* SUBMIT BUTTON */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black font-bold py-4 rounded-2xl hover:from-lime-500 hover:to-lime-600 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-70"
             >
-              <option>Full-time</option>
-              <option>Part-time</option>
-              <option>Contract</option>
-              <option>Internship</option>
-            </select>
-          </div>
+              {loading ? "Posting..." : "🚀 Post Job"}
+            </button>
+
+          </form>
         </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition disabled:bg-blue-400"
-        >
-          {loading ? 'Posting...' : '🚀 Post Job'}
-        </button>
-      </form>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default JobPosting
+export default JobPosting;

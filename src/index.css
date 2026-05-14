@@ -6,5 +6,41 @@
 @layer base {
   body {
     background-color: rgb(249, 250, 251);
+    /* src/index.css - Add these animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.delay-1000 {
+  animation-delay: 1000ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
   }
 }
