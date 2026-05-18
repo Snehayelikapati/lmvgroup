@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react'
 import JobPosting from './JobPosting'
 import CandidateTracking from './CandidateList'
 import InterviewScheduling from './InterviewScheduler'
-import { useLocation } from 'react-router-dom'
+import { useLocation , useNavigate} from 'react-router-dom'
+
 const Dashboard = () => {
   // const [activeTab, setActiveTab] = useState('jobposting')
   const location = useLocation()
+  const navigate = useNavigate();
 const [activeTab, setActiveTab] = useState(() => {
   return (
     location.state?.activeTab ||
@@ -29,17 +31,47 @@ useEffect(() => {
     setJobs(updatedJobs)
     localStorage.setItem('jobs', JSON.stringify(updatedJobs))
   }
+  const handleLogout = () => {
+
+  localStorage.removeItem(
+    "currentUser"
+  );
+
+  localStorage.removeItem(
+    "authToken"
+  );
+
+  navigate("/login");
+};
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <div className="bg-white shadow-md">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-800">🏢 LMV Group - HR Dashboard</h1>
-          <p className="text-gray-500 text-sm">Manage your recruitment process</p>
-        </div>
-      </div>
+     <div className="bg-white shadow-md">
 
+  <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+
+    <div>
+      <h1 className="text-2xl font-bold text-gray-800">
+        🏢 LMV Group - HR Dashboard
+      </h1>
+
+      <p className="text-gray-500 text-sm">
+        Manage your recruitment process
+      </p>
+    </div>
+
+    <button
+      onClick={handleLogout}
+      className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg transition duration-300"
+    >
+      Logout
+    </button>
+
+  </div>
+
+</div>
+      
       {/* Tab Buttons */}
       <div className="max-w-6xl mx-auto px-4 mt-6">
         <div className="flex gap-2 border-b bg-white rounded-t-lg">

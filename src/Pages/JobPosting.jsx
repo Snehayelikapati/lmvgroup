@@ -13,11 +13,13 @@ import { useNavigate } from "react-router-dom";
 
 const JobPosting = ({ onJobPosted }) => {
   const [form, setForm] = useState({
+    companyName: "",
     title: "",
     description: "",
     requirements: "",
     location: "",
     salary: "",
+    skills: "",
     jobType: "Full-time",
   });
 
@@ -40,35 +42,58 @@ const JobPosting = ({ onJobPosted }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const newJob = {
-      id: Date.now(),
-      ...form,
-      createdAt: new Date().toISOString(),
-    };
+      const payload = {
+        ...form,
+        skills: form.skills
+          .split(",")
+          .map((skill) => skill.trim()),
+      };
 
-    onJobPosted(newJob);
+      const response = await fetch(
+        "http://localhost:5000/api/jobs",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
-    setSuccess("✅ Job posted successfully!");
+      const data = await response.json();
 
-    setForm({
-      title: "",
-      description: "",
-      requirements: "",
-      location: "",
-      salary: "",
-      jobType: "Full-time",
-    });
+      if (data.success) {
+        setSuccess("✅ Job posted successfully!");
 
-    setTimeout(() => {
-      setSuccess("");
-    }, 3000);
+        onJobPosted(data.data);
 
-    setLoading(false);
+        setForm({
+          companyName: "",
+          title: "",
+          description: "",
+          requirements: "",
+          location: "",
+          salary: "",
+          skills: "",
+          jobType: "Full-time",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
+
+      setTimeout(() => {
+        setSuccess("");
+      }, 3000);
+    }
   };
 
   return (
@@ -117,18 +142,44 @@ const JobPosting = ({ onJobPosted }) => {
         </div>
 
         {/* SUCCESS MESSAGE */}
+    {/* <div className="min-h-screen bg-[#f5f5f3] p-4 md:p-8">
+      <div className="max-w-5xl mx-auto"> */}
+      
+
         {success && (
           <div className="bg-green-100 text-green-700 p-4 rounded-2xl mb-6 shadow-md font-medium animate-slide-down">
             {success}
           </div>
         )}
 
-        {/* FORM CONTAINER */}
         <div className="bg-white rounded-[35px] shadow-2xl p-6 md:p-10">
-
           <form onSubmit={handleSubmit} className="space-y-6">
 
-            {/* JOB TITLE */}
+            {/* Company Name */}
+            <div>
+              <label className="text-gray-700 font-semibold mb-2 block">
+                Company Name
+              </label>
+
+              <select
+                name="companyName"
+                value={form.companyName}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3"
+              >
+                <option value="">Select Company</option>
+                <option value="LakshithaTech">LakshithaTech</option>
+                <option value="LMV Insurance">LMV Insurance</option>
+                <option value="LMV Financial Services">
+                  LMV Financial Services
+                </option>
+                <option value="LMV Investments">
+                  LMV Investments
+                </option>
+              </select>
+            </div>
+
+            {/* Job Title */}
             <div>
               <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
                 <Briefcase size={18} className="text-lime-600" />
@@ -141,12 +192,14 @@ const JobPosting = ({ onJobPosted }) => {
                 value={form.title}
                 onChange={handleChange}
                 required
-                placeholder="e.g. Senior Frontend Developer"
+                
                 className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
+                placeholder="Senior Frontend Developer"
+             
               />
             </div>
 
-            {/* DESCRIPTION */}
+            {/* Description */}
             <div>
               <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
                 <FileText size={18} className="text-lime-600" />
@@ -161,10 +214,11 @@ const JobPosting = ({ onJobPosted }) => {
                 rows="5"
                 placeholder="Enter job description..."
                 className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
+                
               />
             </div>
 
-            {/* REQUIREMENTS */}
+            {/* Requirements */}
             <div>
               <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
                 <ClipboardList size={18} className="text-lime-600" />
@@ -179,13 +233,13 @@ const JobPosting = ({ onJobPosted }) => {
                 rows="4"
                 placeholder="Skills, experience, qualifications..."
                 className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
+               
               />
             </div>
 
-            {/* GRID SECTION */}
-            <div className="grid md:grid-cols-3 gap-5">
+            <div className="grid md:grid-cols-2 gap-5">
 
-              {/* LOCATION */}
+              {/* Location */}
               <div>
                 <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
                   <MapPin size={18} className="text-lime-600" />
@@ -199,14 +253,15 @@ const JobPosting = ({ onJobPosted }) => {
                   onChange={handleChange}
                   placeholder="Remote / Hyderabad"
                   className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
+                 
                 />
               </div>
 
-              {/* SALARY */}
+              {/* Salary */}
               <div>
                 <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
                   <IndianRupee size={18} className="text-lime-600" />
-                  Salary Range
+                  Salary
                 </label>
 
                 <input
@@ -216,10 +271,27 @@ const JobPosting = ({ onJobPosted }) => {
                   onChange={handleChange}
                   placeholder="₹10L - ₹15L"
                   className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
+                 
                 />
               </div>
 
-              {/* JOB TYPE */}
+              {/* Skills */}
+              <div>
+                <label className="text-gray-700 font-semibold mb-2 block">
+                  Skills
+                </label>
+
+                <input
+                  type="text"
+                  name="skills"
+                  value={form.skills}
+                  onChange={handleChange}
+                  placeholder="React, Node.js"
+                  className="w-full border border-gray-300 rounded-2xl px-4 py-3"
+                />
+              </div>
+
+              {/* Job Type */}
               <div>
                 <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
                   <Layers3 size={18} className="text-lime-600" />
@@ -231,6 +303,7 @@ const JobPosting = ({ onJobPosted }) => {
                   value={form.jobType}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
+                 
                 >
                   <option>Full-time</option>
                   <option>Part-time</option>
@@ -240,11 +313,10 @@ const JobPosting = ({ onJobPosted }) => {
               </div>
             </div>
 
-            {/* SUBMIT BUTTON */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black font-bold py-4 rounded-2xl hover:from-lime-500 hover:to-lime-600 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-70"
+              className="w-full bg-lime-500 text-black font-bold py-4 rounded-2xl"
             >
               {loading ? "Posting..." : "🚀 Post Job"}
             </button>

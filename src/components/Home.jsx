@@ -1,15 +1,16 @@
 // src/components/Home.jsx
-
+ 
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { 
-  ArrowRight, 
-  Search, 
-  ChevronRight, 
-  CheckCircle, 
-  Briefcase, 
-  Users, 
-  Calendar, 
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  Search,
+  ChevronRight,
+  CheckCircle,
+  Briefcase,
+  Users,
+  Calendar,
   BarChart3,
   Sparkles,
   Star,
@@ -34,13 +35,13 @@ import {
   UserPlus,
   Video
 } from "lucide-react";
-
+ 
 // =====================================================
 // ROTATING IMAGE CAROUSEL COMPONENT
 // =====================================================
 const RotatingImageCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+ 
   const images = [
     {
       url: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop",
@@ -68,22 +69,22 @@ const RotatingImageCarousel = () => {
       desc: "Performance Tracking"
     }
   ];
-
+ 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
     }, 3000);
     return () => clearInterval(interval);
   }, [images.length]);
-
+ 
   const goToPrevious = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
-
+ 
   const goToNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
-
+ 
   return (
     <div className="relative">
       <div className="bg-white p-4 rounded-[40px] shadow-2xl transition-all duration-500">
@@ -99,34 +100,34 @@ const RotatingImageCarousel = () => {
           </div>
         </div>
       </div>
-
-      <button 
+ 
+      <button
         onClick={goToPrevious}
         className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-lime-400 hover:text-white transition-all duration-300 z-10"
       >
         ←
       </button>
-      <button 
+      <button
         onClick={goToNext}
         className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-lime-400 hover:text-white transition-all duration-300 z-10"
       >
         →
       </button>
-
+ 
       <div className="flex justify-center gap-2 mt-6">
         {images.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentIndex(idx)}
             className={`transition-all duration-300 rounded-full ${
-              currentIndex === idx 
-                ? "w-8 h-2 bg-lime-500" 
+              currentIndex === idx
+                ? "w-8 h-2 bg-lime-500"
                 : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
             }`}
           />
         ))}
       </div>
-
+ 
       <div className="absolute -top-6 left-8 bg-white rounded-2xl px-5 py-3 shadow-xl animate-bounce">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-lime-100 flex items-center justify-center text-lime-600">
@@ -142,7 +143,7 @@ const RotatingImageCarousel = () => {
           </div>
         </div>
       </div>
-
+ 
       <div className="absolute -right-6 top-1/3 bg-gradient-to-r from-lime-400 to-emerald-400 rounded-2xl px-5 py-3 shadow-xl transform rotate-6">
         <div className="text-white text-center">
           <div className="text-2xl font-bold">
@@ -154,12 +155,38 @@ const RotatingImageCarousel = () => {
     </div>
   );
 };
-
+ 
 const Home = () => {
   const [scrolled, setScrolled] = useState(false);
   const statsRef = useRef(null);
   const [statsVisible, setStatsVisible] = useState(false);
 
+  const navigate = useNavigate();
+
+  const handleProtectedNavigation = (
+    state
+  ) => {
+
+    const user =
+      localStorage.getItem(
+        "currentUser"
+      );
+
+    if (!user) {
+
+      navigate("/login");
+
+    } else {
+
+      navigate("/dashboard", {
+        state,
+      });
+
+    }
+  };
+
+  
+ 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -173,7 +200,7 @@ const Home = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
+ 
   const testimonials = [
     {
       name: "Sarah Johnson",
@@ -197,7 +224,7 @@ const Home = () => {
       image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop"
     }
   ];
-
+ 
   const partners = [
     {
       name: "LMV Insurance",
@@ -224,21 +251,21 @@ const Home = () => {
       color: "from-orange-500 to-yellow-500",
     },
   ];
-
+ 
   const stats = [
     { value: 500, suffix: "+", label: "Companies Trust Us", icon: Briefcase },
     { value: 10000, suffix: "+", label: "Jobs Filled", icon: Users },
     { value: 98, suffix: "%", label: "Satisfaction Rate", icon: Star },
     { value: 24, suffix: "/7", label: "Support Available", icon: Clock },
   ];
-
+ 
   const businessFeatures = [
     { icon: Building2, title: "LLC Formation", desc: "Complete legal setup", color: "from-blue-500 to-blue-600" },
     { icon: CreditCard, title: "Stripe Integration", desc: "Payment gateway ready", color: "from-purple-500 to-purple-600" },
     { icon: FileText, title: "EIN Registration", desc: "Tax ID acquired", color: "from-green-500 to-green-600" },
     { icon: Headphones, title: "24/7 Support", desc: "Expert assistance", color: "from-orange-500 to-orange-600" },
   ];
-
+ 
   // Feature cards data
   const featureCards = [
     {
@@ -278,7 +305,7 @@ const Home = () => {
       features: ["Automated invites", "Calendar sync", "Video conferencing", "Reminder notifications"]
     }
   ];
-
+ 
   return (
     <div className="bg-[#f5f5f3] overflow-hidden">
       {/* ===================================================== */}
@@ -289,9 +316,9 @@ const Home = () => {
           style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop')",
           }}>
-          
+         
           <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/40"></div>
-          
+         
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {[...Array(20)].map((_, i) => (
               <div
@@ -308,7 +335,7 @@ const Home = () => {
               />
             ))}
           </div>
-
+ 
           {/* NAVBAR */}
           <div className="relative z-20 flex justify-between items-center px-6 md:px-14 py-6">
             <Link to="/" className="flex items-center gap-4 group">
@@ -326,6 +353,7 @@ const Home = () => {
                 </div>
               </div>
 
+ 
               {/* LOGO TEXT */}
               <div className="leading-tight">
                 <h1 className="text-3xl md:text-4xl font-extrabold tracking-wide">
@@ -342,6 +370,7 @@ const Home = () => {
               </div>
             </Link>
 
+ 
             <div className="hidden lg:flex items-center gap-8 text-white font-medium">
               {["Home", "About", "Services"].map((item, idx) => (
                 <Link
@@ -356,7 +385,7 @@ const Home = () => {
                 </Link>
               ))}
             </div>
-
+ 
             <div className="flex items-center gap-4">
               <button className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-lg hover:bg-white/20 hover:scale-105 transition-all duration-300">
                 <Search size={20} />
@@ -372,7 +401,7 @@ const Home = () => {
               </Link>
             </div>
           </div>
-
+ 
           {/* HERO CONTENT */}
           <div className="relative z-10 px-6 md:px-16 flex items-center min-h-[760px]">
             <div className="max-w-4xl animate-fade-in-up">
@@ -380,19 +409,19 @@ const Home = () => {
                 <Sparkles size={18} className="text-lime-400" />
                 🚀 Trusted by 500+ Companies Worldwide
               </div>
-
+ 
               <h1 className="text-white text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-8">
                 Smart Recruitment
                 <br />
                 For Modern
                 <span className="bg-gradient-to-r from-lime-400 to-lime-300 bg-clip-text text-transparent"> Businesses</span>
               </h1>
-
+ 
               <p className="text-white/90 text-lg md:text-xl leading-relaxed max-w-2xl mb-10">
                 Post jobs, manage candidates, track applications,
                 and schedule interviews all in one powerful platform.
               </p>
-
+ 
               <div className="flex flex-col sm:flex-row gap-5">
                 <Link
                   to="/dashboard"
@@ -411,7 +440,7 @@ const Home = () => {
               </div>
             </div>
           </div>
-
+ 
           {/* BOTTOM STRIP */}
           <div className="absolute bottom-8 left-0 w-full px-6 md:px-14 z-20 animate-fade-in-up animation-delay-500">
             <div className="grid md:grid-cols-3 gap-4">
@@ -432,7 +461,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* ===================================================== */}
       {/* TRUSTED COMPANIES SECTION */}
       {/* ===================================================== */}
@@ -441,6 +470,7 @@ const Home = () => {
         <div className="absolute top-0 left-0 w-96 h-96 bg-lime-200/30 blur-3xl rounded-full"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-200/30 blur-3xl rounded-full"></div>
 
+ 
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Heading */}
           <div className="text-center mb-16">
@@ -449,6 +479,7 @@ const Home = () => {
               Our Trusted Companies
             </span>
 
+ 
             <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-5 leading-tight">
               Trusted by
               <span className="bg-gradient-to-r from-lime-500 to-emerald-500 bg-clip-text text-transparent">
@@ -456,12 +487,14 @@ const Home = () => {
               </span>
             </h2>
 
+ 
             <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
               A powerful network of companies delivering excellence in
               Insurance, Technology, Financial Services, and Investment Solutions.
             </p>
           </div>
 
+ 
           {/* Company Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {partners.map((partner, idx) => (
@@ -478,6 +511,9 @@ const Home = () => {
                 {/* Top Glow */}
                 <div className={`absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br ${partner.color} opacity-10 blur-3xl rounded-full group-hover:scale-125 transition-all duration-700`}></div>
 
+ 
+              
+ 
                 {/* Logo */}
                 <div className="relative z-10 flex justify-center mb-6">
                   <div className="w-28 h-28 bg-gray-50 rounded-3xl flex items-center justify-center shadow-inner border border-gray-100 group-hover:scale-110 transition-transform duration-500">
@@ -488,18 +524,18 @@ const Home = () => {
                     />
                   </div>
                 </div>
-
+ 
                 {/* Company Name */}
                 <div className="relative z-10 text-center">
                   <h3 className="text-xl font-bold text-gray-800 group-hover:text-lime-600 transition-colors duration-300 leading-snug">
                     {partner.name}
                   </h3>
-
+ 
                   <p className="text-gray-500 text-sm mt-3 leading-relaxed">
                     Delivering trusted and innovative business solutions worldwide.
                   </p>
                 </div>
-
+ 
                 {/* Visit Button */}
                 <div className="relative z-10 mt-8 flex justify-center">
                   <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold group-hover:bg-lime-500 group-hover:text-white transition-all duration-300">
@@ -515,7 +551,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* ===================================================== */}
       {/* FEATURE CARDS SECTION */}
       {/* ===================================================== */}
@@ -532,15 +568,18 @@ const Home = () => {
             Comprehensive tools to streamline your recruitment process and find the best talent faster.
           </p>
         </div>
-
+ 
         <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {featureCards.map((card) => (
-            <Link
-              key={card.id}
-              to={card.link}
-              state={card.state}
-              className="group bg-white rounded-[35px] overflow-hidden hover:-translate-y-3 transition-all duration-500 hover:shadow-2xl relative"
-            >
+            <div
+  key={card.id}
+  onClick={() =>
+    handleProtectedNavigation(
+      card.state
+    )
+  }
+  className="group bg-white rounded-[35px] overflow-hidden hover:-translate-y-3 transition-all duration-500 hover:shadow-2xl relative cursor-pointer"
+>
               {/* Image Container */}
               <div className="relative overflow-hidden h-64">
                 <img
@@ -555,7 +594,7 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-
+ 
               {/* Content */}
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">
@@ -566,15 +605,15 @@ const Home = () => {
                     Learn more <ArrowRight size={14} />
                   </span>
                 </div>
-                
+               
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">
                   {card.title}
                 </h3>
-                
+               
                 <p className="text-gray-600 mb-4">
                   {card.description}
                 </p>
-
+ 
                 {/* Features List */}
                 <div className="space-y-2 mt-4 pt-4 border-t border-gray-100">
                   {card.features.map((feature, idx) => (
@@ -585,14 +624,14 @@ const Home = () => {
                   ))}
                 </div>
               </div>
-
+ 
               {/* Hover Gradient Overlay */}
               <div className={`absolute inset-0 bg-gradient-to-r ${card.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none`}></div>
-            </Link>
+            </div>
           ))}
         </div>
       </section>
-
+ 
       {/* ===================================================== */}
       {/* STATS SECTION WITH COUNTERS */}
       {/* ===================================================== */}
@@ -617,16 +656,16 @@ const Home = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* ===================================================== */}
     <section className="px-4 md:px-8 py-24 bg-[#f5f5f3]">
   <div className="bg-white rounded-[40px] overflow-hidden shadow-2xl max-w-7xl mx-auto border border-gray-100">
-    
+   
     <div className="grid lg:grid-cols-2">
-
+ 
       {/* LEFT SIDE */}
       <div className="p-8 md:p-12 lg:p-16 bg-gradient-to-br from-white to-lime-50">
-
+ 
         {/* Heading */}
         <div className="mb-12">
           <div className="inline-flex items-center gap-2 px-5 py-2 bg-lime-100 rounded-full mb-6 shadow-sm">
@@ -635,21 +674,21 @@ const Home = () => {
               LMV Group Services
             </span>
           </div>
-
+ 
           <h2 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
             Smart Business
             <span className="text-lime-500"> Solutions</span>
           </h2>
-
+ 
           <p className="text-gray-500 mt-5 text-lg leading-relaxed">
             LMV Group provides modern recruitment, financial, insurance,
             and technology solutions for growing businesses.
           </p>
         </div>
-
+ 
         {/* Services */}
         <div className="space-y-6">
-
+ 
           {[
             {
               emoji: "💼",
@@ -657,21 +696,21 @@ const Home = () => {
               subtitle: "Smart Hiring Process",
               desc: "Post jobs, track candidates, schedule interviews, and manage hiring efficiently from one platform."
             },
-
+ 
             {
               emoji: "🛡️",
               title: "Insurance Services",
               subtitle: "Financial Protection",
               desc: "Trusted insurance solutions designed for individuals, families, and businesses with secure coverage plans."
             },
-
+ 
             {
               emoji: "💳",
               title: "Financial Services",
               subtitle: "Business Growth",
               desc: "Complete financial guidance, loan assistance, and investment support for sustainable business growth."
             },
-
+ 
             {
               emoji: "💻",
               title: "Technology Services",
@@ -684,41 +723,41 @@ const Home = () => {
               className="group bg-white rounded-3xl p-6 hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-lime-200 cursor-pointer hover:-translate-y-1"
             >
               <div className="flex items-start justify-between gap-4">
-
+ 
                 <div className="flex-1">
-
+ 
                   <div className="flex items-center gap-4 mb-4">
-
+ 
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-lime-400 to-lime-500 flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                       {service.emoji}
                     </div>
-
+ 
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900">
                         {service.title}
                       </h3>
-
+ 
                       <p className="text-lime-600 font-semibold">
                         {service.subtitle}
                       </p>
                     </div>
                   </div>
-
+ 
                   <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                     {service.desc}
                   </p>
-
+ 
                 </div>
-
+ 
                 <div className="w-11 h-11 rounded-full bg-lime-100 flex items-center justify-center text-lime-600 group-hover:bg-lime-500 group-hover:text-white transition-all duration-300">
                   →
                 </div>
-
+ 
               </div>
             </div>
           ))}
         </div>
-
+ 
         {/* Button */}
         <div className="mt-10">
           <Link
@@ -730,18 +769,18 @@ const Home = () => {
           </Link>
         </div>
       </div>
-
+ 
       {/* RIGHT SIDE */}
       <div className="relative min-h-[700px] bg-gradient-to-br from-lime-100 via-white to-emerald-100 flex items-center justify-center overflow-hidden">
-
+ 
         {/* Background Glow */}
         <div className="absolute w-[500px] h-[500px] bg-lime-300 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-
+ 
         <div className="absolute w-[400px] h-[400px] bg-emerald-300 rounded-full blur-3xl opacity-20 animate-pulse animation-delay-1000"></div>
-
+ 
         {/* Main Content */}
         <div className="relative z-20 flex flex-col items-center text-center px-8">
-
+ 
           {/* Logo */}
           <div className="w-40 h-40 rounded-[40px] bg-white shadow-2xl flex items-center justify-center border border-gray-100 mb-8 hover:scale-105 transition-all duration-500">
             <img
@@ -750,54 +789,54 @@ const Home = () => {
               className="w-28 object-contain"
             />
           </div>
-
+ 
           {/* Heading */}
           <h3 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
             Empowering
             <span className="text-lime-500"> Businesses</span>
           </h3>
-
+ 
           <p className="text-gray-600 mt-6 max-w-md text-lg leading-relaxed">
             Delivering trusted recruitment, insurance, finance,
             and technology services with innovation and excellence.
           </p>
-
+ 
           {/* Features */}
           <div className="grid grid-cols-2 gap-5 mt-10 w-full max-w-lg">
-
+ 
             <div className="bg-white rounded-2xl p-5 shadow-lg">
               <div className="text-3xl font-bold text-lime-600">500+</div>
               <div className="text-sm text-gray-600 mt-1">
                 Happy Clients
               </div>
             </div>
-
+ 
             <div className="bg-white rounded-2xl p-5 shadow-lg">
               <div className="text-3xl font-bold text-blue-600">98%</div>
               <div className="text-sm text-gray-600 mt-1">
                 Success Rate
               </div>
             </div>
-
+ 
             <div className="bg-white rounded-2xl p-5 shadow-lg">
               <div className="text-3xl font-bold text-emerald-600">24/7</div>
               <div className="text-sm text-gray-600 mt-1">
                 Customer Support
               </div>
             </div>
-
+ 
             <div className="bg-white rounded-2xl p-5 shadow-lg">
               <div className="text-3xl font-bold text-orange-500">10K+</div>
               <div className="text-sm text-gray-600 mt-1">
                 Candidates Managed
               </div>
             </div>
-
+ 
           </div>
-
+ 
         </div>
       </div>
-
+ 
     </div>
   </div>
 </section>
@@ -817,7 +856,7 @@ const Home = () => {
               Join thousands of satisfied businesses that have transformed their recruitment process.
             </p>
           </div>
-
+ 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, idx) => (
               <div
@@ -846,7 +885,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* ===================================================== */}
       {/* CTA SECTION */}
       {/* ===================================================== */}
@@ -876,7 +915,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
+ 
       <style jsx>{`
         @keyframes fadeInUp {
           from {
@@ -912,7 +951,7 @@ const Home = () => {
     </div>
   );
 };
-
+ 
 // Counter Component
 const Counter = ({ end, suffix }) => {
   const [count, setCount] = useState(0);
@@ -933,5 +972,5 @@ const Counter = ({ end, suffix }) => {
   }, [end]);
   return <>{count}{suffix}</>;
 };
-
+ 
 export default Home;
