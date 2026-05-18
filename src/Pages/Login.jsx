@@ -1,10 +1,8 @@
 // src/pages/Login.jsx
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Lock, ArrowRight, Eye, EyeOff, Building2, Sparkles, Shield, TrendingUp, ArrowLeft, Home } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Eye, EyeOff, Building2, Sparkles, Shield, TrendingUp, ArrowLeft } from 'lucide-react'
 
-import { Mail, Lock, ArrowRight, Eye, EyeOff, Building2, Sparkles, Shield, TrendingUp } from 'lucide-react'
- 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -13,13 +11,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
- 
   const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
     
-   
     try {
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
@@ -32,28 +28,8 @@ const Login = () => {
       const data = await response.json()
       
       if (data.success) {
-        localStorage.setItem('currentUser', JSON.stringify(data.data.session))
-        localStorage.setItem('authToken', data.data.session.empid)
-        setError('')
-     
-      const data = await response.json()
-     
-      if (data.success) {
-        // Store user data in localStorage
-        localStorage.setItem(
-  "currentUser",
-  JSON.stringify(data.data)
-);
-
-localStorage.setItem(
-  "authToken",
-  data.data.empid
-);
-       
-        // Show success message
-        setError('') // Clear any errors
-       
-        // Redirect to dashboard
+        localStorage.setItem('currentUser', JSON.stringify(data.data))
+        localStorage.setItem('authToken', data.data.empid)
         navigate('/dashboard')
       } else {
         setError(data.message || 'Login failed. Please try again.')
@@ -82,19 +58,6 @@ localStorage.setItem(
         <span className="text-sm font-medium">Back to Home</span>
       </button>
 
-      {/* Home Button - Top Right */}
-      <Link
-        to="/"
-        className="absolute top-6 right-6 z-20 flex items-center gap-2 bg-lime-500/20 hover:bg-lime-500/30 text-lime-400 px-4 py-2 rounded-full transition-all duration-300 group"
-      >
-        {/* <Home size={18} className="group-hover:scale-110 transition-transform" />
-        <span className="text-sm font-medium">Home</span> */}
-      </Link>
-
- 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center py-12 px-4 relative overflow-hidden">
-     
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-lime-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -102,7 +65,6 @@ localStorage.setItem(
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
       </div>
 
- 
       {/* Floating Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
@@ -122,10 +84,6 @@ localStorage.setItem(
       </div>
 
       <div className="max-w-md w-full relative z-10">
-        
- 
-      <div className="max-w-md w-full relative z-10">
-       
         {/* Logo & Brand Section */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -142,10 +100,6 @@ localStorage.setItem(
         {/* Login Card */}
         <div className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20">
           
- 
-        {/* Login Card */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20">
-         
           {/* Error Message */}
           {error && (
             <div className="mb-6 bg-red-500/20 border border-red-500/50 text-red-200 p-4 rounded-xl flex items-center gap-2 animate-shake">
@@ -154,7 +108,6 @@ localStorage.setItem(
             </div>
           )}
 
- 
           {/* Info Message */}
           <div className="mb-6 bg-lime-500/20 border border-lime-500/50 text-lime-200 p-4 rounded-xl">
             <p className="text-sm flex items-center gap-2">
@@ -164,10 +117,6 @@ localStorage.setItem(
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
-            
- 
-          <form onSubmit={handleLogin} className="space-y-5">
-           
             {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
@@ -187,7 +136,6 @@ localStorage.setItem(
               </div>
             </div>
 
- 
             {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
@@ -213,7 +161,6 @@ localStorage.setItem(
               </div>
             </div>
 
- 
             {/* Forgot Password */}
             <div className="flex justify-end">
               <Link to="/forgot-password" className="text-sm text-lime-400 hover:text-lime-300 transition hover:underline">
@@ -221,7 +168,6 @@ localStorage.setItem(
               </Link>
             </div>
 
- 
             {/* Login Button */}
             <button
               type="submit"
@@ -242,7 +188,6 @@ localStorage.setItem(
             </button>
           </form>
 
- 
           {/* Register Link */}
           <div className="mt-6 text-center pt-6 border-t border-white/10">
             <p className="text-gray-400">
@@ -253,7 +198,6 @@ localStorage.setItem(
             </p>
           </div>
 
- 
           {/* Features Section */}
           <div className="mt-8 grid grid-cols-3 gap-4 pt-4">
             <div className="text-center">
@@ -277,14 +221,12 @@ localStorage.setItem(
           </div>
         </div>
 
- 
         {/* Footer Note */}
         <p className="text-center text-gray-500 text-xs mt-8">
           © 2024 LMV Group. All rights reserved.
         </p>
       </div>
 
- 
       <style>{`
         @keyframes float {
           0%, 100% {
@@ -314,5 +256,5 @@ localStorage.setItem(
     </div>
   )
 }
- 
-export default Login;
+
+export default Login

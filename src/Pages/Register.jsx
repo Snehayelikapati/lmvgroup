@@ -1,83 +1,3 @@
-// src/pages/Register.jsx
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Lock, ArrowRight, Eye, EyeOff, User, Phone, Building2, Sparkles, CheckCircle, ArrowLeft, Home } from 'lucide-react'
-
-const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-    setError('')
-  }
-
-  const goBack = () => {
-    navigate('/')
-  }
-
-  const handleRegister = (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    setSuccess('')
-
-    // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match!')
-      setLoading(false)
-      return
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters!')
-      setLoading(false)
-      return
-    }
-
-    // Simulate API call
-    setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem('users') || '[]')
-      
-      // Check if user already exists
-      if (users.find(u => u.email === formData.email)) {
-        setError('User already exists with this email!')
-        setLoading(false)
-        return
-      }
-
-      // Create new user
-      const newUser = {
-        id: Date.now(),
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        password: formData.password,
-        createdAt: new Date().toISOString()
-      }
-
-      users.push(newUser)
-      localStorage.setItem('users', JSON.stringify(users))
-      
-      setSuccess('Account created successfully! Redirecting to login...')
-      
-      setTimeout(() => {
-        navigate('/login')
-      }, 2000)
-      
-      setLoading(false)
-    }, 500)
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -91,6 +11,7 @@ import {
   Building2,
   Sparkles,
   CheckCircle,
+  ArrowLeft,
 } from "lucide-react";
 
 const Register = () => {
@@ -110,112 +31,67 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-const handleProtectedNavigation = (
-  state
-) => {
-
-  const user =
-    localStorage.getItem(
-      "currentUser"
-    );
-
-  if (!user) {
-    navigate("/login");
-  } else {
-    navigate("/dashboard", {
-      state,
-    });
-  }
-};
+  const goBack = () => {
+    navigate("/");
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
   };
 
- const handleRegister = async (e) => {
-  e.preventDefault();
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
 
-  setLoading(true);
-  setError("");
-  setSuccess("");
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match!");
+      setLoading(false);
+      return;
+    }
 
-  // VALIDATION
-  if (
-    formData.password !==
-    formData.confirmPassword
-  ) {
-    setError("Passwords do not match!");
-    setLoading(false);
-    return;
-  }
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters!");
+      setLoading(false);
+      return;
+    }
 
-  if (formData.password.length < 6) {
-    setError(
-      "Password must be at least 6 characters!"
-    );
-
-    setLoading(false);
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/auth/register",
-      {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
-
           email: formData.email,
-
           phone: formData.phone,
-
-          password:
-            formData.password,
-
-          department:
-            formData.department,
-
+          password: formData.password,
+          department: formData.department,
           role: formData.role,
         }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuccess("Account created successfully!");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      } else {
+        setError(data.message);
       }
-    );
-
-    const data =
-      await response.json();
-
-    if (data.success) {
-      setSuccess(
-        "Account created successfully!"
-      );
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
-    } else {
-      setError(data.message);
+    } catch (error) {
+      console.log(error);
+      setError("Something went wrong");
     }
-  } catch (error) {
-    console.log(error);
 
-    setError(
-      "Something went wrong"
-    );
-  }
-
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center py-12 px-4 relative overflow-hidden">
-      
       {/* Back Button - Top Left */}
       <button
         onClick={goBack}
@@ -224,15 +100,6 @@ const handleProtectedNavigation = (
         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
         <span className="text-sm font-medium">Back to Home</span>
       </button>
-
-      {/* Home Button - Top Right */}
-      <Link
-        to="/"
-        className="absolute top-6 right-6 z-20 flex items-center gap-2 bg-lime-500/20 hover:bg-lime-500/30 text-lime-400 px-4 py-2 rounded-full transition-all duration-300 group"
-      >
-        {/* <Home size={18} className="group-hover:scale-110 transition-transform" />
-        <span className="text-sm font-medium">Home</span> */}
-      </Link>
 
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -259,8 +126,6 @@ const handleProtectedNavigation = (
       </div>
 
       <div className="max-w-md w-full relative z-10">
-        
-      <div className="max-w-md w-full relative z-10">
         {/* Logo & Brand Section */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -276,7 +141,6 @@ const handleProtectedNavigation = (
 
         {/* Register Card */}
         <div className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20">
-          
           {/* Info Message */}
           <div className="mb-6 bg-lime-500/20 border border-lime-500/50 text-lime-200 p-4 rounded-xl">
             <p className="text-sm flex items-center gap-2">
@@ -287,7 +151,7 @@ const handleProtectedNavigation = (
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 bg-red-500/20 border border-red-500/50 text-red-200 p-4 rounded-xl flex items-center gap-2 animate-shake">
+            <div className="mb-6 bg-red-500/20 border border-red-500/50 text-red-200 p-4 rounded-xl flex items-center gap-2">
               <div className="w-1 h-1 bg-red-400 rounded-full"></div>
               <span className="text-sm">{error}</span>
             </div>
@@ -295,32 +159,28 @@ const handleProtectedNavigation = (
 
           {/* Success Message */}
           {success && (
-            <div className="mb-6 bg-green-500/20 border border-green-500/50 text-green-200 p-4 rounded-xl flex items-center gap-2 animate-slide-down">
+            <div className="mb-6 bg-green-500/20 border border-green-500/50 text-green-200 p-4 rounded-xl flex items-center gap-2">
               <CheckCircle size={18} />
               <span className="text-sm">{success}</span>
             </div>
           )}
 
           <form onSubmit={handleRegister} className="space-y-4">
-            
             {/* Full Name */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                 <User size={16} className="text-lime-400" />
                 Full Name
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
-                  placeholder="Enter your full name"
-                  required
-                />
-                <User size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              </div>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
+                placeholder="Enter your full name"
+                required
+              />
             </div>
 
             {/* Email */}
@@ -329,18 +189,15 @@ const handleProtectedNavigation = (
                 <Mail size={16} className="text-lime-400" />
                 Email Address
               </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
-                  placeholder="Enter your email"
-                  required
-                />
-                <Mail size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              </div>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
+                placeholder="Enter your email"
+                required
+              />
             </div>
 
             {/* Phone Number */}
@@ -349,17 +206,53 @@ const handleProtectedNavigation = (
                 <Phone size={16} className="text-lime-400" />
                 Phone Number (Optional)
               </label>
-              <div className="relative">
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
-                  placeholder="Enter your phone number"
-                />
-                <Phone size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              </div>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
+                placeholder="Enter your phone number"
+              />
+            </div>
+
+            {/* Department */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                <Building2 size={16} className="text-lime-400" />
+                Department
+              </label>
+              <select
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white"
+                required
+              >
+                <option value="" className="bg-gray-900">Select Department</option>
+                <option value="Human Resources" className="bg-gray-900">Human Resources</option>
+                <option value="Administration" className="bg-gray-900">Administration</option>
+                <option value="IT" className="bg-gray-900">IT</option>
+              </select>
+            </div>
+
+            {/* Role */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                <User size={16} className="text-lime-400" />
+                Role
+              </label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white"
+                required
+              >
+                <option value="" className="bg-gray-900">Select Role</option>
+                <option value="HR" className="bg-gray-900">HR</option>
+                <option value="ADMIN" className="bg-gray-900">ADMIN</option>
+              </select>
             </div>
 
             {/* Password */}
@@ -480,14 +373,8 @@ const handleProtectedNavigation = (
           75% { transform: translateX(5px); }
         }
         @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         .animate-float {
           animation: float 8s ease-in-out infinite;
@@ -497,274 +384,6 @@ const handleProtectedNavigation = (
         }
         .animate-slide-down {
           animation: slideDown 0.3s ease-out;
-        }
-        .animation-delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
-    </div>
-  )
-}
-          <p className="text-gray-400 text-sm">
-            Create your account to get started
-          </p>
-        </div>
-
-        {/* Register Card */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20">
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 bg-red-500/20 border border-red-500/50 text-red-200 p-4 rounded-xl flex items-center gap-2">
-              <div className="w-1 h-1 bg-red-400 rounded-full"></div>
-              <span className="text-sm">{error}</span>
-            </div>
-          )}
-
-          {/* Success Message */}
-          {success && (
-            <div className="mb-6 bg-green-500/20 border border-green-500/50 text-green-200 p-4 rounded-xl flex items-center gap-2">
-              <CheckCircle size={18} />
-              <span className="text-sm">{success}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleRegister} className="space-y-4">
-            {/* Full Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <User size={16} className="text-lime-400" />
-                Full Name
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
-                  placeholder="Enter your full name"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <Mail size={16} className="text-lime-400" />
-                Email Address
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Phone Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <Phone size={16} className="text-lime-400" />
-                Phone Number (Optional)
-              </label>
-              <div className="relative">
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-            </div>
-            {/* Department */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <Building2 size={16} className="text-lime-400" />
-                Department
-              </label>
-
-              <select
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white"
-                required
-              >
-                <option value="" className="bg-gray-900">
-                  Select Department
-                </option>
-
-                <option value="Human Resources" className="bg-gray-900">
-                  Human Resources
-                </option>
-
-                <option value="Administration" className="bg-gray-900">
-                  Administration
-                </option>
-
-                <option value="IT" className="bg-gray-900">
-                  IT
-                </option>
-              </select>
-            </div>
-
-            {/* Role */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <User size={16} className="text-lime-400" />
-                Role
-              </label>
-
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white"
-                required
-              >
-                <option value="" className="bg-gray-900">
-                  Select Role
-                </option>
-
-                <option value="HR" className="bg-gray-900">
-                  HR
-                </option>
-
-                <option value="ADMIN" className="bg-gray-900">
-                  ADMIN
-                </option>
-              </select>
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <Lock size={16} className="text-lime-400" />
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
-                  placeholder="Create a password (min 6 characters)"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-lime-400 transition"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <Lock size={16} className="text-lime-400" />
-                Confirm Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition-all duration-300 text-white placeholder-gray-400"
-                  placeholder="Confirm your password"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-lime-400 transition"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Register Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-lime-400 to-lime-500 hover:from-lime-500 hover:to-lime-600 text-black font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
-            >
-              {loading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                  Creating Account...
-                </>
-              ) : (
-                <>
-                  Create Account
-                  <ArrowRight size={18} />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Login Link */}
-          <div className="mt-6 text-center pt-6 border-t border-white/10">
-            <p className="text-gray-400">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-lime-400 hover:text-lime-300 font-semibold transition hover:underline"
-              >
-                Sign In
-              </Link>
-            </p>
-          </div>
-
-          {/* Benefits Section */}
-          <div className="mt-8 space-y-2">
-            <p className="text-xs text-gray-500 text-center">
-              By signing up, you agree to our Terms & Conditions
-            </p>
-            <div className="flex justify-center gap-4 text-xs text-gray-500">
-              <span>✓ Free forever</span>
-              <span>✓ No credit card</span>
-              <span>✓ 24/7 support</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer Note */}
-        <p className="text-center text-gray-500 text-xs mt-8">
-          © 2024 LMV Group. All rights reserved.
-        </p>
-      </div>
-
-      <style>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0) translateX(0);
-            opacity: 0;
-          }
-          50% {
-            transform: translateY(-20px) translateX(20px);
-            opacity: 0.5;
-          }
-        }
-        .animate-float {
-          animation: float 8s ease-in-out infinite;
         }
         .animation-delay-1000 {
           animation-delay: 1s;
