@@ -1,161 +1,222 @@
 // src/components/layout/Footer.jsx
-import React from 'react'
-import { Link } from 'react-router-dom'
+
+import React from "react";
+import { Link } from "react-router-dom";
+import {
+  Building2,
+  Mail,
+  Phone,
+  MapPin,
+  ArrowRight,
+  ShieldCheck,
+  Users,
+  CalendarCheck,
+  Briefcase,
+} from "lucide-react";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   const quickLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Careers', path: '/careers' },
-    { name: 'About Us', path: '/about' },
-    { name: 'Contact', path: '/contact' },
-    { name: 'Privacy Policy', path: '/privacy' },
-    { name: 'Terms of Service', path: '/terms' }
-  ]
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Services", path: "/services" },
+    // { name: "Careers", path: "/careers" },
+    // { name: "Contact", path: "/contact" },
+  ];
 
   const services = [
-    'Job Posting',
-    'Candidate Management',
-    'Interview Scheduling',
-    'Recruitment Solutions',
-    'HR Analytics'
-  ]
-
-  const contactInfo = {
-    email: 'hr@lmvgroup.com',
-    phone: '+91 98765 43210',
-    address: 'Hyderabad, Telangana, India'
-  }
-
-  const socialLinks = [
-    { name: 'LinkedIn', icon: '🔗', url: '#' },
-    { name: 'Twitter', icon: '🐦', url: '#' },
-    { name: 'Facebook', icon: '📘', url: '#' },
-    { name: 'Instagram', icon: '📷', url: '#' }
-  ]
+    {
+      icon: Briefcase,
+      name: "Job Posting",
+    },
+    {
+      icon: Users,
+      name: "Candidate Management",
+    },
+    {
+      icon: CalendarCheck,
+      name: "Interview Scheduling",
+    },
+    {
+      icon: ShieldCheck,
+      name: "HR Solutions",
+    },
+  ];
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="relative bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white overflow-hidden">
+      
+      {/* Background Glow */}
+      <div className="absolute top-0 left-0 w-52 h-52 bg-lime-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-52 h-52 bg-emerald-500/10 rounded-full blur-3xl"></div>
+
       {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-10">
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          
+
           {/* Company Info */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <span className="text-2xl">🏢</span>
-              <h3 className="text-xl font-bold text-white">LMV Group</h3>
+            <div className="flex items-center gap-3 mb-4">
+              
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-r from-lime-400 to-emerald-500 flex items-center justify-center shadow-lg">
+                <Building2 size={22} className="text-black" />
+              </div>
+
+              <div>
+                <h2 className="text-xl font-bold">
+                  LMV <span className="text-lime-400">Group</span>
+                </h2>
+
+                <p className="text-xs text-gray-400">
+                  Smart HR Solutions
+                </p>
+              </div>
             </div>
-            <p className="text-sm leading-relaxed">
-              Empowering businesses with innovative recruitment solutions. 
-              Connect talent with opportunity across 4+ platforms.
+
+            <p className="text-gray-400 leading-relaxed text-sm">
+              Modern recruitment and HR management solutions for smart businesses and companies.
             </p>
-            <div className="mt-4 flex space-x-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition"
-                >
-                  <span>{social.icon}</span>
-                </a>
-              ))}
+
+            {/* Social Icons */}
+            <div className="flex items-center gap-3 mt-5">
+              
+              <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-lime-500 hover:text-black transition duration-300 cursor-pointer">
+                🌐
+              </div>
+
+              <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-lime-500 hover:text-black transition duration-300 cursor-pointer">
+                💼
+              </div>
+
+              <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-lime-500 hover:text-black transition duration-300 cursor-pointer">
+                📧
+              </div>
+
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.path}>
-                  <Link
-                    to={link.path}
-                    className="text-gray-400 hover:text-white transition text-sm"
-                  >
-                    → {link.name}
-                  </Link>
-                </li>
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              Quick Links
+            </h3>
+
+            <div className="space-y-2">
+              {quickLinks.map((link, idx) => (
+                <Link
+                  key={idx}
+                  to={link.path}
+                  className="group flex items-center gap-2 text-gray-400 hover:text-lime-400 transition-all duration-300 text-sm"
+                >
+                  <ArrowRight
+                    size={14}
+                    className="group-hover:translate-x-1 transition-transform duration-300"
+                  />
+
+                  {link.name}
+                </Link>
               ))}
-            </ul>
+            </div>
           </div>
 
           {/* Services */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Our Services</h3>
-            <ul className="space-y-2">
-              {services.map((service, index) => (
-                <li key={index} className="text-gray-400 text-sm">
-                  • {service}
-                </li>
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              Services
+            </h3>
+
+            <div className="space-y-3">
+              {services.map((service, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-3 text-gray-400 text-sm"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                    <service.icon size={15} />
+                  </div>
+
+                  <span>{service.name}</span>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Contact Us</h3>
-            <div className="space-y-3">
-              <div className="flex items-start space-x-3">
-                <span>📧</span>
-                <a href={`mailto:${contactInfo.email}`} className="text-gray-400 hover:text-white text-sm">
-                  {contactInfo.email}
-                </a>
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              Contact
+            </h3>
+
+            <div className="space-y-4">
+
+              <div className="flex items-center gap-3">
+                <Mail size={16} className="text-lime-400" />
+
+                <span className="text-gray-400 text-sm">
+                  hr@lmvgroup.com
+                </span>
               </div>
-              <div className="flex items-start space-x-3">
-                <span>📞</span>
-                <a href={`tel:${contactInfo.phone}`} className="text-gray-400 hover:text-white text-sm">
-                  {contactInfo.phone}
-                </a>
+
+              <div className="flex items-center gap-3">
+                <Phone size={16} className="text-lime-400" />
+
+                <span className="text-gray-400 text-sm">
+                  +91 98765 43210
+                </span>
               </div>
-              <div className="flex items-start space-x-3">
-                <span>📍</span>
-                <span className="text-gray-400 text-sm">{contactInfo.address}</span>
+
+              <div className="flex items-center gap-3">
+                <MapPin size={16} className="text-lime-400" />
+
+                <span className="text-gray-400 text-sm">
+                  Hyderabad, Telangana
+                </span>
               </div>
-            </div>
-            
-            {/* Newsletter */}
-            <div className="mt-6">
-              <h4 className="text-sm font-semibold text-white mb-2">Subscribe to Newsletter</h4>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-l-md focus:outline-none focus:border-blue-500"
-                />
-                <button className="px-3 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 text-sm">
-                  Subscribe
-                </button>
-              </div>
+
             </div>
           </div>
+
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row justify-between items-center text-sm">
-            <p className="text-gray-400">
-              © {currentYear} LMV Group. All rights reserved.
-            </p>
-            <div className="flex space-x-4 mt-2 md:mt-0">
-              <Link to="/privacy" className="text-gray-400 hover:text-white transition">
-                Privacy Policy
-              </Link>
-              <Link to="/terms" className="text-gray-400 hover:text-white transition">
-                Terms of Service
-              </Link>
-              <Link to="/sitemap" className="text-gray-400 hover:text-white transition">
-                Sitemap
-              </Link>
-            </div>
+      {/* Bottom Footer */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
+
+          <p className="text-gray-500 text-xs text-center">
+            © {currentYear} LMV Group. All Rights Reserved.
+          </p>
+
+          <div className="flex items-center gap-4 text-xs">
+
+            <Link
+              to="/privacy"
+              className="text-gray-500 hover:text-lime-400 transition"
+            >
+              Privacy
+            </Link>
+
+            <Link
+              to="/terms"
+              className="text-gray-500 hover:text-lime-400 transition"
+            >
+              Terms
+            </Link>
+
+            <Link
+              to="/services"
+              className="text-gray-500 hover:text-lime-400 transition"
+            >
+              Services
+            </Link>
+
           </div>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

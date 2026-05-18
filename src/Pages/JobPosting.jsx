@@ -6,7 +6,10 @@ import {
   FileText,
   ClipboardList,
   Layers3,
+  ArrowLeft,
+  Home
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const JobPosting = ({ onJobPosted }) => {
   const [form, setForm] = useState({
@@ -20,6 +23,15 @@ const JobPosting = ({ onJobPosted }) => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
+
+  const goBack = () => {
+    navigate("/");
+  };
+
+  const goHome = () => {
+    navigate("/");
+  };
 
   const handleChange = (e) => {
     setForm({
@@ -60,14 +72,33 @@ const JobPosting = ({ onJobPosted }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f3] p-4 md:p-8">
+    <div className="min-h-screen bg-[#f5f5f3] p-4 md:p-8 relative">
+      
+      {/* Back Button - Top Left */}
+      <button
+        onClick={goBack}
+        className="absolute top-6 left-6 z-20 flex items-center gap-2 bg-white/80 backdrop-blur-md hover:bg-white text-gray-800 px-4 py-2 rounded-full transition-all duration-300 group shadow-md"
+      >
+        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+        <span className="text-sm font-medium">Back to Home</span>
+      </button>
+
+      {/* Home Button - Top Right */}
+      {/* <button
+        onClick={goHome}
+        className="absolute top-6 right-6 z-20 flex items-center gap-2 bg-lime-500 hover:bg-lime-600 text-white px-4 py-2 rounded-full transition-all duration-300 group shadow-md"
+      >
+        <Home size={18} className="group-hover:scale-110 transition-transform" />
+        <span className="text-sm font-medium">Home</span>
+      </button> */}
 
       <div className="max-w-5xl mx-auto">
 
         {/* TOP HERO SECTION */}
-        {/* <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-[40px] p-8 md:p-12 text-white mb-10 relative overflow-hidden shadow-2xl">
+        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-[40px] p-8 md:p-12 text-white mb-10 relative overflow-hidden shadow-2xl mt-12">
 
           <div className="absolute top-0 right-0 w-72 h-72 bg-lime-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-lime-400/10 rounded-full blur-3xl"></div>
 
           <div className="relative z-10">
             <span className="bg-lime-400 text-black px-4 py-2 rounded-full text-sm font-semibold">
@@ -83,11 +114,11 @@ const JobPosting = ({ onJobPosted }) => {
               candidates for your company.
             </p>
           </div>
-        </div> */}
+        </div>
 
         {/* SUCCESS MESSAGE */}
         {success && (
-          <div className="bg-green-100 text-green-700 p-4 rounded-2xl mb-6 shadow-md font-medium">
+          <div className="bg-green-100 text-green-700 p-4 rounded-2xl mb-6 shadow-md font-medium animate-slide-down">
             {success}
           </div>
         )}
@@ -111,7 +142,7 @@ const JobPosting = ({ onJobPosted }) => {
                 onChange={handleChange}
                 required
                 placeholder="e.g. Senior Frontend Developer"
-                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
               />
             </div>
 
@@ -129,7 +160,7 @@ const JobPosting = ({ onJobPosted }) => {
                 required
                 rows="5"
                 placeholder="Enter job description..."
-                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
               />
             </div>
 
@@ -147,7 +178,7 @@ const JobPosting = ({ onJobPosted }) => {
                 required
                 rows="4"
                 placeholder="Skills, experience, qualifications..."
-                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
               />
             </div>
 
@@ -167,7 +198,7 @@ const JobPosting = ({ onJobPosted }) => {
                   value={form.location}
                   onChange={handleChange}
                   placeholder="Remote / Hyderabad"
-                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
                 />
               </div>
 
@@ -184,7 +215,7 @@ const JobPosting = ({ onJobPosted }) => {
                   value={form.salary}
                   onChange={handleChange}
                   placeholder="₹10L - ₹15L"
-                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
                 />
               </div>
 
@@ -199,7 +230,7 @@ const JobPosting = ({ onJobPosted }) => {
                   name="jobType"
                   value={form.jobType}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400"
+                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-lime-400 transition"
                 >
                   <option>Full-time</option>
                   <option>Part-time</option>
@@ -221,6 +252,22 @@ const JobPosting = ({ onJobPosted }) => {
           </form>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-slide-down {
+          animation: slideDown 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 };

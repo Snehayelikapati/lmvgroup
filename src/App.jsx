@@ -6,7 +6,8 @@ import Footer from './components/Footer'
 import Dashboard from './pages/Dashboard'
 import Home from './components/Home'
 import About from './components/About'
-import Contact from './components/Contact'
+// import Contact from './components/Contact'
+import Services from './components/Services'
 import Privacy from './components/Privacy'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -36,9 +37,11 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
+            {/* <Route path="/contact" element={<Contact />} /> */}
+             <Route path="/services" element={<Services />} />
             <Route path="/privacy" element={<Privacy />} />
                   <Route path="/login" element={<Login />} />
+                   <Route path="/footer" element={<Footer />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

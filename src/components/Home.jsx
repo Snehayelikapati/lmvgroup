@@ -199,11 +199,30 @@ const Home = () => {
   ];
 
   const partners = [
-    "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-    "https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg",
-    "https://upload.wikimedia.org/wikipedia/commons/4/44/Amazon_logo.svg",
-    "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
-    "https://upload.wikimedia.org/wikipedia/commons/b/b9/Slack_Technologies_Logo.svg",
+    {
+      name: "LMV Insurance",
+      logo: "/Companylogos/INSURANCE.jpeg",
+      url: "https://www.lmvinsurance.com/",
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      name: "Lakshita Tech",
+      logo: "/Companylogos/Lakshitha_Tech.jpg",
+      url: "https://www.lakshithatech.com/",
+      color: "from-purple-500 to-pink-500",
+    },
+    {
+      name: "LMV Financial Services",
+      logo: "/Companylogos/LMV_FinancialServices.png",
+      url: "https://www.lmvfs.in/",
+      color: "from-green-500 to-emerald-500",
+    },
+    {
+      name: "LMV Investment Services",
+      logo: "/Companylogos/LMV_Investments.png",
+      url: "https://www.lmvinvestmentservices.com/",
+      color: "from-orange-500 to-yellow-500",
+    },
   ];
 
   const stats = [
@@ -291,20 +310,40 @@ const Home = () => {
           </div>
 
           {/* NAVBAR */}
-          <div className={`relative z-30 flex items-center justify-between px-6 md:px-12 py-6 transition-all duration-500 ${
-            scrolled ? "bg-black/30 backdrop-blur-md" : ""
-          }`}>
-            <div className="flex items-center gap-3 group cursor-pointer">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-lime-400 to-lime-500 flex items-center justify-center text-black font-bold text-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                ✦
+          <div className="relative z-20 flex justify-between items-center px-6 md:px-14 py-6">
+            <Link to="/" className="flex items-center gap-4 group">
+              {/* LOGO IMAGE */}
+              <div className="relative">
+                {/* GLOW */}
+                <div className="absolute inset-0 bg-lime-400/40 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                {/* LOGO BOX */}
+                <div className="relative w-20 h-20 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl overflow-hidden group-hover:scale-110 transition-all duration-500">
+                  <img
+                    src="/LMVGroup.png"
+                    alt="LMV Logo"
+                    className="w-16 h-16 object-contain drop-shadow-2xl"
+                  />
+                </div>
               </div>
-              <h1 className="text-white text-2xl font-bold tracking-tight">
-                LMV <span className="text-lime-400">Group</span>
-              </h1>
-            </div>
+
+              {/* LOGO TEXT */}
+              <div className="leading-tight">
+                <h1 className="text-3xl md:text-4xl font-extrabold tracking-wide">
+                  <span className="bg-gradient-to-r from-lime-300 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                    LMV
+                  </span>
+                  <span className="text-white ml-2">
+                    Group
+                  </span>
+                </h1>
+                <p className="text-white/60 text-xs md:text-sm tracking-[5px] uppercase font-medium mt-1">
+                  Recruitment Platform
+                </p>
+              </div>
+            </Link>
 
             <div className="hidden lg:flex items-center gap-8 text-white font-medium">
-              {["Home", "About", "Services", "Contact Us"].map((item, idx) => (
+              {["Home", "About", "Services"].map((item, idx) => (
                 <Link
                   key={idx}
                   to={item === "Home" ? "/" : `/${item.toLowerCase().replace(" ", "")}`}
@@ -395,21 +434,90 @@ const Home = () => {
       </section>
 
       {/* ===================================================== */}
-      {/* PARTNERS SECTION */}
+      {/* TRUSTED COMPANIES SECTION */}
       {/* ===================================================== */}
-      <section className="py-16 px-4 md:px-8 border-b border-gray-200">
-        <p className="text-center text-gray-500 uppercase tracking-wider text-sm mb-8">
-          Trusted by Industry Leaders
-        </p>
-        <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 opacity-60">
-          {partners.map((logo, idx) => (
-            <img key={idx} src={logo} alt={`Partner ${idx + 1}`} className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-          ))}
+      <section className="py-24 px-4 md:px-8 bg-gradient-to-b from-white to-gray-50 border-b border-gray-200 overflow-hidden relative">
+        {/* Background Glow */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-lime-200/30 blur-3xl rounded-full"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-200/30 blur-3xl rounded-full"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Heading */}
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 px-5 py-2 bg-lime-100 text-lime-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
+              <Sparkles size={16} />
+              Our Trusted Companies
+            </span>
+
+            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-5 leading-tight">
+              Trusted by
+              <span className="bg-gradient-to-r from-lime-500 to-emerald-500 bg-clip-text text-transparent">
+                {" "}Industry Leaders
+              </span>
+            </h2>
+
+            <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
+              A powerful network of companies delivering excellence in
+              Insurance, Technology, Financial Services, and Investment Solutions.
+            </p>
+          </div>
+
+          {/* Company Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {partners.map((partner, idx) => (
+              <a
+                key={idx}
+                href={partner.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative bg-white rounded-[32px] p-8 border border-gray-100 hover:border-lime-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden"
+              >
+                {/* Hover Gradient */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${partner.color} opacity-0 group-hover:opacity-10 transition-all duration-500`}></div>
+
+                {/* Top Glow */}
+                <div className={`absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br ${partner.color} opacity-10 blur-3xl rounded-full group-hover:scale-125 transition-all duration-700`}></div>
+
+                {/* Logo */}
+                <div className="relative z-10 flex justify-center mb-6">
+                  <div className="w-28 h-28 bg-gray-50 rounded-3xl flex items-center justify-center shadow-inner border border-gray-100 group-hover:scale-110 transition-transform duration-500">
+                    <img
+                      src={partner.logo}
+                      alt={partner.name}
+                      className="max-h-20 object-contain"
+                    />
+                  </div>
+                </div>
+
+                {/* Company Name */}
+                <div className="relative z-10 text-center">
+                  <h3 className="text-xl font-bold text-gray-800 group-hover:text-lime-600 transition-colors duration-300 leading-snug">
+                    {partner.name}
+                  </h3>
+
+                  <p className="text-gray-500 text-sm mt-3 leading-relaxed">
+                    Delivering trusted and innovative business solutions worldwide.
+                  </p>
+                </div>
+
+                {/* Visit Button */}
+                <div className="relative z-10 mt-8 flex justify-center">
+                  <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold group-hover:bg-lime-500 group-hover:text-white transition-all duration-300">
+                    Visit Website
+                    <ArrowRight
+                      size={16}
+                      className="group-hover:translate-x-1 transition-transform duration-300"
+                    />
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ===================================================== */}
-      {/* FEATURE CARDS SECTION - JOB POSTING, CANDIDATE LISTING, INTERVIEW SCHEDULING */}
+      {/* FEATURE CARDS SECTION */}
       {/* ===================================================== */}
       <section className="py-24 px-4 md:px-8">
         <div className="text-center mb-16">
@@ -425,7 +533,7 @@ const Home = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {featureCards.map((card) => (
             <Link
               key={card.id}
@@ -511,93 +619,188 @@ const Home = () => {
       </section>
 
       {/* ===================================================== */}
-      {/* SERVICES SECTION WITH ROTATING IMAGE CAROUSEL */}
-      {/* ===================================================== */}
-      <section className="px-4 md:px-8 py-24">
-        <div className="bg-white rounded-[40px] overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500">
-          <div className="grid lg:grid-cols-2">
-            {/* LEFT SIDE - SERVICES LIST */}
-            <div className="p-8 md:p-12 lg:p-16 bg-gradient-to-br from-gray-50 to-white">
-              <div className="mb-12">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-lime-100 rounded-full mb-6">
-                  <div className="w-2 h-2 bg-lime-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-semibold text-lime-700 uppercase tracking-wide">What We Offer</span>
-                </div>
-                <h2 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-                  Our Services
-                  <span className="text-lime-500"> List</span>
-                </h2>
-                <p className="text-gray-500 mt-4 text-lg">Comprehensive solutions for modern business growth</p>
-              </div>
+    <section className="px-4 md:px-8 py-24 bg-[#f5f5f3]">
+  <div className="bg-white rounded-[40px] overflow-hidden shadow-2xl max-w-7xl mx-auto border border-gray-100">
+    
+    <div className="grid lg:grid-cols-2">
 
-              <div className="space-y-6">
-                {[
-                  { emoji: "📊", title: "Full-Funnel", subtitle: "Campaign Strategy", desc: "End-to-end campaign management from awareness to conversion, optimizing every stage of your customer journey." },
-                  { emoji: "📈", title: "Data Driven", subtitle: "Growth Tactics", desc: "Leverage analytics and insights to drive sustainable growth with measurable ROI and data-backed decisions." },
-                  { emoji: "🎯", title: "Target Market", subtitle: "Research & Insights", desc: "Deep dive into audience behavior, competitive analysis, and actionable market intelligence." },
-                  { emoji: "🌐", title: "Cross Channel", subtitle: "Media Planning", desc: "Integrated media strategies across digital, social, search, and traditional channels for maximum reach." },
-                ].map((service, idx) => (
-                  <div key={idx} className="group bg-white rounded-2xl p-6 hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-lime-200 cursor-pointer">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-lime-400 to-lime-500 flex items-center justify-center text-white text-xl shadow-lg group-hover:scale-110 transition-transform">
-                            {service.emoji}
-                          </div>
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900">{service.title}</h3>
-                            <p className="text-lime-600 font-semibold">{service.subtitle}</p>
-                          </div>
-                        </div>
-                        <p className="text-gray-600 text-sm leading-relaxed">{service.desc}</p>
-                      </div>
-                      <div className="w-10 h-10 rounded-full bg-lime-100 flex items-center justify-center text-lime-600 group-hover:translate-x-1 transition-transform">
-                        →
-                      </div>
+      {/* LEFT SIDE */}
+      <div className="p-8 md:p-12 lg:p-16 bg-gradient-to-br from-white to-lime-50">
+
+        {/* Heading */}
+        <div className="mb-12">
+          <div className="inline-flex items-center gap-2 px-5 py-2 bg-lime-100 rounded-full mb-6 shadow-sm">
+            <div className="w-2 h-2 bg-lime-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-semibold text-lime-700 uppercase tracking-wide">
+              LMV Group Services
+            </span>
+          </div>
+
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+            Smart Business
+            <span className="text-lime-500"> Solutions</span>
+          </h2>
+
+          <p className="text-gray-500 mt-5 text-lg leading-relaxed">
+            LMV Group provides modern recruitment, financial, insurance,
+            and technology solutions for growing businesses.
+          </p>
+        </div>
+
+        {/* Services */}
+        <div className="space-y-6">
+
+          {[
+            {
+              emoji: "💼",
+              title: "Recruitment Solutions",
+              subtitle: "Smart Hiring Process",
+              desc: "Post jobs, track candidates, schedule interviews, and manage hiring efficiently from one platform."
+            },
+
+            {
+              emoji: "🛡️",
+              title: "Insurance Services",
+              subtitle: "Financial Protection",
+              desc: "Trusted insurance solutions designed for individuals, families, and businesses with secure coverage plans."
+            },
+
+            {
+              emoji: "💳",
+              title: "Financial Services",
+              subtitle: "Business Growth",
+              desc: "Complete financial guidance, loan assistance, and investment support for sustainable business growth."
+            },
+
+            {
+              emoji: "💻",
+              title: "Technology Services",
+              subtitle: "Digital Transformation",
+              desc: "Website development, software solutions, and digital services to modernize your business operations."
+            }
+          ].map((service, idx) => (
+            <div
+              key={idx}
+              className="group bg-white rounded-3xl p-6 hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-lime-200 cursor-pointer hover:-translate-y-1"
+            >
+              <div className="flex items-start justify-between gap-4">
+
+                <div className="flex-1">
+
+                  <div className="flex items-center gap-4 mb-4">
+
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-lime-400 to-lime-500 flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      {service.emoji}
+                    </div>
+
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">
+                        {service.title}
+                      </h3>
+
+                      <p className="text-lime-600 font-semibold">
+                        {service.subtitle}
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
 
-              <div className="mt-10">
-                <Link
-                  to="/services"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-lime-500 to-emerald-500 text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl transition-all duration-300 hover:scale-105"
-                >
-                  View All Services
-                  <ArrowRight size={20} />
-                </Link>
+                  <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                    {service.desc}
+                  </p>
+
+                </div>
+
+                <div className="w-11 h-11 rounded-full bg-lime-100 flex items-center justify-center text-lime-600 group-hover:bg-lime-500 group-hover:text-white transition-all duration-300">
+                  →
+                </div>
+
               </div>
             </div>
-
-            {/* RIGHT SIDE - ROTATING IMAGES CAROUSEL */}
-            <div className="relative min-h-[700px] lg:min-h-[800px] bg-gradient-to-br from-lime-50 via-emerald-50 to-teal-50 flex items-center justify-center overflow-hidden">
-              <div className="absolute w-[500px] h-[500px] bg-lime-200 rounded-full blur-3xl opacity-30 animate-pulse"></div>
-              <div className="absolute w-[400px] h-[400px] bg-emerald-200 rounded-full blur-3xl opacity-30 animate-pulse animation-delay-1000"></div>
-              
-              <div className="relative z-20 w-full max-w-md">
-                <RotatingImageCarousel />
-              </div>
-
-              <div className="absolute bottom-8 left-8 bg-white/90 backdrop-blur-md rounded-2xl px-5 py-3 shadow-xl z-30">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-lime-600">500+</div>
-                  <div className="text-xs text-gray-600">Projects Completed</div>
-                </div>
-              </div>
-
-              <div className="absolute top-32 right-4 bg-white/90 backdrop-blur-md rounded-2xl px-5 py-3 shadow-xl z-30">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">98%</div>
-                  <div className="text-xs text-gray-600">Client Retention</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-      </section>
 
+        {/* Button */}
+        <div className="mt-10">
+          <Link
+            to="/services"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-lime-500 to-emerald-500 text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl transition-all duration-300 hover:scale-105"
+          >
+            Explore Services
+            <ArrowRight size={20} />
+          </Link>
+        </div>
+      </div>
 
+      {/* RIGHT SIDE */}
+      <div className="relative min-h-[700px] bg-gradient-to-br from-lime-100 via-white to-emerald-100 flex items-center justify-center overflow-hidden">
+
+        {/* Background Glow */}
+        <div className="absolute w-[500px] h-[500px] bg-lime-300 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+
+        <div className="absolute w-[400px] h-[400px] bg-emerald-300 rounded-full blur-3xl opacity-20 animate-pulse animation-delay-1000"></div>
+
+        {/* Main Content */}
+        <div className="relative z-20 flex flex-col items-center text-center px-8">
+
+          {/* Logo */}
+          <div className="w-40 h-40 rounded-[40px] bg-white shadow-2xl flex items-center justify-center border border-gray-100 mb-8 hover:scale-105 transition-all duration-500">
+            <img
+              src="/LMVGroup.png"
+              alt="LMV Group"
+              className="w-28 object-contain"
+            />
+          </div>
+
+          {/* Heading */}
+          <h3 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+            Empowering
+            <span className="text-lime-500"> Businesses</span>
+          </h3>
+
+          <p className="text-gray-600 mt-6 max-w-md text-lg leading-relaxed">
+            Delivering trusted recruitment, insurance, finance,
+            and technology services with innovation and excellence.
+          </p>
+
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-5 mt-10 w-full max-w-lg">
+
+            <div className="bg-white rounded-2xl p-5 shadow-lg">
+              <div className="text-3xl font-bold text-lime-600">500+</div>
+              <div className="text-sm text-gray-600 mt-1">
+                Happy Clients
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 shadow-lg">
+              <div className="text-3xl font-bold text-blue-600">98%</div>
+              <div className="text-sm text-gray-600 mt-1">
+                Success Rate
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 shadow-lg">
+              <div className="text-3xl font-bold text-emerald-600">24/7</div>
+              <div className="text-sm text-gray-600 mt-1">
+                Customer Support
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 shadow-lg">
+              <div className="text-3xl font-bold text-orange-500">10K+</div>
+              <div className="text-sm text-gray-600 mt-1">
+                Candidates Managed
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
       {/* ===================================================== */}
       {/* TESTIMONIALS SECTION */}
       {/* ===================================================== */}

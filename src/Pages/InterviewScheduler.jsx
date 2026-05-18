@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Calendar,
   Clock,
@@ -8,20 +8,16 @@ import {
   Phone,
   User,
   Briefcase,
-  MapPin,
   Send,
   CheckCircle,
   XCircle,
   Clock as ClockIcon,
   Users,
-  TrendingUp,
-  Award,
   ChevronRight,
   Link as LinkIcon,
   UserCheck,
   CalendarDays,
   AlarmClock,
-  VideoIcon,
   Building2
 } from 'lucide-react'
 
@@ -40,113 +36,213 @@ const InterviewScheduler = () => {
     notes: ''
   })
   const [success, setSuccess] = useState('')
-  const [selectedMode, setSelectedMode] = useState('online')
+  const [loading, setLoading] = useState(false)
+
+  // Fetch interviews on component mount
+  useEffect(() => {
+    fetchInterviews()
+  }, [])
+
+  const fetchInterviews = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/interviews")
+      const data = await response.json()
+      if (data.success) {
+        setInterviews(data.data)
+      }
+    } catch (error) {
+      console.error("Error fetching interviews:", error)
+    }
+  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    const newInterview = {
-      id: Date.now(),
-      ...form,
-      status: 'Scheduled',
-      scheduledAt: new Date().toISOString()
+    setLoading(true)
+
+    try {
+      const response = await fetch("http://localhost:5000/api/interviews/schedule", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          candidateName: form.candidateName,
+          candidateEmail: form.candidateEmail,
+          candidatePhone: form.candidatePhone,
+          jobPosition: form.jobPosition,
+          interviewDate: form.interviewDate,
+          interviewTime: form.interviewTime,
+          interviewMode: form.interviewMode,
+          meetingLink: form.meetingLink,
+          interviewer: form.interviewer,
+          notes: form.notes,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        await fetchInterviews()
+        
+        setSuccess(`✅ Interview scheduled for ${form.candidateName}`)
+
+        setForm({
+          candidateName: '',
+          candidateEmail: '',
+          candidatePhone: '',
+          jobPosition: '',
+          interviewDate: '',
+          interviewTime: '',
+          interviewMode: 'online',
+          meetingLink: '',
+          interviewer: '',
+          notes: ''
+        })
+
+        setTimeout(() => setSuccess(''), 3000)
+      } else {
+        setSuccess(`❌ Failed to schedule interview: ${data.message || 'Unknown error'}`)
+        setTimeout(() => setSuccess(''), 3000)
+      }
+    } catch (error) {
+      console.log(error)
+      setSuccess('❌ Server Error - Please check if backend is running')
+      setTimeout(() => setSuccess(''), 3000)
+    } finally {
+      setLoading(false)
     }
-    
-    setInterviews([newInterview, ...interviews])
-    setSuccess(`✅ Interview scheduled for ${form.candidateName}`)
-    
-    setForm({
-      candidateName: '',
-      candidateEmail: '',
-      candidatePhone: '',
-      jobPosition: '',
-      interviewDate: '',
-      interviewTime: '',
-      interviewMode: 'online',
-      meetingLink: '',
-      interviewer: '',
-      notes: ''
-    })
-    
-    setTimeout(() => setSuccess(''), 3000)
   }
 
-  const cancelInterview = (id) => {
-    setInterviews(interviews.filter(interview => interview.id !== id))
-    setSuccess(`❌ Interview cancelled`)
-    setTimeout(() => setSuccess(''), 3000)
+  const cancelInterview = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/interviews/${id}`, {
+        method: "DELETE",
+      })
+      
+      if (response.ok) {
+        await fetchInterviews() // Refresh the list
+        setSuccess(`✅ Interview cancelled successfully`)
+        setTimeout(() => setSuccess(''), 3000)
+      }
+    } catch (error) {
+      console.error("Error cancelling interview:", error)
+      setSuccess('❌ Failed to cancel interview')
+      setTimeout(() => setSuccess(''), 3000)
+    }
   }
 
   const getModeIcon = (mode) => {
     return mode === 'online' ? <Video size={16} /> : <Building size={16} />
   }
 
-  const getStatusColor = (status) => {
-    if (status === 'Completed') return 'text-green-600 bg-green-50 border-green-200'
-    if (status === 'Cancelled') return 'text-red-600 bg-red-50 border-red-200'
-    return 'text-blue-600 bg-blue-50 border-blue-200'
-  }
+  // Get today's date in YYYY-MM-DD format
+  const todayDate = new Date().toISOString().split('T')[0]
+  
+  // Filter interviews
+  const todayInterviews = interviews.filter(interview => interview.interviewDate === todayDate && interview.status === 'scheduled')
+  const upcomingInterviews = interviews.filter(interview => 
+    interview.interviewDate > todayDate && interview.status === 'scheduled'
+  )
+  const pastInterviews = interviews.filter(interview => 
+    interview.interviewDate < todayDate || interview.status === 'cancelled'
+  )
+
+  // Sort interviews by date (nearest first)
+  const sortedTodayInterviews = [...todayInterviews].sort((a, b) => a.interviewTime.localeCompare(b.interviewTime))
+  const sortedUpcomingInterviews = [...upcomingInterviews].sort((a, b) => a.interviewDate.localeCompare(b.interviewDate))
 
   const stats = {
     total: interviews.length,
-    upcoming: interviews.filter(i => i.status === 'Scheduled').length,
-    today: interviews.filter(i => i.interviewDate === new Date().toISOString().split('T')[0]).length
+    upcoming: upcomingInterviews.length,
+    today: todayInterviews.length,
+    completed: pastInterviews.filter(i => i.status === 'completed').length,
+    cancelled: pastInterviews.filter(i => i.status === 'cancelled').length
   }
 
-  const upcomingInterviews = interviews.filter(i => i.status === 'Scheduled')
-  const todayInterviews = interviews.filter(i => i.interviewDate === new Date().toISOString().split('T')[0])
-
   return (
-    <div className="bg-[#f5f5f3] min-h-screen">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white px-4 md:px-8 pt-20 pb-12">
+      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white px-4 md:px-8 pt-20 pb-12">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-lime-400 to-lime-500 flex items-center justify-center">
-              <Calendar size={24} className="text-black" />
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-lime-400 to-lime-500 flex items-center justify-center shadow-lg">
+              <Calendar size={28} className="text-black" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold">Interview Scheduler</h1>
-              <p className="text-gray-300 mt-1">Schedule and manage candidate interviews</p>
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                Interview Scheduler
+              </h1>
+              <p className="text-gray-400 mt-1">Schedule and manage candidate interviews seamlessly</p>
             </div>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
+            {/* Total Interviews */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-300 text-sm">Total Interviews</p>
-                  <p className="text-3xl font-bold mt-1">{stats.total}</p>
+                  <p className="text-gray-300 text-xs uppercase tracking-wider">Total</p>
+                  <p className="text-3xl font-bold mt-1 text-white">{stats.total}</p>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-lime-400/20 flex items-center justify-center">
                   <Calendar size={20} className="text-lime-400" />
                 </div>
               </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+
+            {/* Today's Interviews */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-300 text-sm">Upcoming Interviews</p>
-                  <p className="text-3xl font-bold mt-1 text-blue-400">{stats.upcoming}</p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-blue-400/20 flex items-center justify-center">
-                  <ClockIcon size={20} className="text-blue-400" />
-                </div>
-              </div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-300 text-sm">Today's Interviews</p>
+                  <p className="text-gray-300 text-xs uppercase tracking-wider">Today</p>
                   <p className="text-3xl font-bold mt-1 text-green-400">{stats.today}</p>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-green-400/20 flex items-center justify-center">
-                  <Users size={20} className="text-green-400" />
+                  <ClockIcon size={20} className="text-green-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Upcoming */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-300 text-xs uppercase tracking-wider">Upcoming</p>
+                  <p className="text-3xl font-bold mt-1 text-blue-400">{stats.upcoming}</p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-blue-400/20 flex items-center justify-center">
+                  <CalendarDays size={20} className="text-blue-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Completed */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-300 text-xs uppercase tracking-wider">Completed</p>
+                  <p className="text-3xl font-bold mt-1 text-purple-400">{stats.completed}</p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-purple-400/20 flex items-center justify-center">
+                  <CheckCircle size={20} className="text-purple-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Cancelled */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-300 text-xs uppercase tracking-wider">Cancelled</p>
+                  <p className="text-3xl font-bold mt-1 text-red-400">{stats.cancelled}</p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-red-400/20 flex items-center justify-center">
+                  <XCircle size={20} className="text-red-400" />
                 </div>
               </div>
             </div>
@@ -156,19 +252,23 @@ const InterviewScheduler = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-        {/* Success Message */}
+        {/* Success/Error Message */}
         {success && (
-          <div className="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md animate-fade-in-up">
-            <div className="flex items-center gap-2">
-              <CheckCircle size={20} />
-              <span className="font-medium">{success}</span>
+          <div className={`mb-6 rounded-xl shadow-lg animate-fade-in-up ${
+            success.includes('✅') ? 'bg-green-50 border-l-4 border-green-500 text-green-700' : 'bg-red-50 border-l-4 border-red-500 text-red-700'
+          }`}>
+            <div className="p-4">
+              <div className="flex items-center gap-2">
+                {success.includes('✅') ? <CheckCircle size={20} /> : <XCircle size={20} />}
+                <span className="font-medium">{success}</span>
+              </div>
             </div>
           </div>
         )}
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Schedule Form */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div className="bg-gradient-to-r from-lime-400 to-lime-500 px-6 py-4">
               <h2 className="text-xl font-bold text-black flex items-center gap-2">
                 <CalendarDays size={20} />
@@ -248,6 +348,7 @@ const InterviewScheduler = () => {
                     value={form.interviewDate}
                     onChange={handleChange}
                     required
+                    min={new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 outline-none transition"
                   />
                 </div>
@@ -287,10 +388,7 @@ const InterviewScheduler = () => {
                   <div className="flex gap-3">
                     <button
                       type="button"
-                      onClick={() => {
-                        setForm({ ...form, interviewMode: 'online' })
-                        setSelectedMode('online')
-                      }}
+                      onClick={() => setForm({ ...form, interviewMode: 'online' })}
                       className={`flex-1 px-4 py-2 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
                         form.interviewMode === 'online'
                           ? 'bg-gradient-to-r from-lime-400 to-lime-500 text-black shadow-md'
@@ -302,10 +400,7 @@ const InterviewScheduler = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        setForm({ ...form, interviewMode: 'offline' })
-                        setSelectedMode('offline')
-                      }}
+                      onClick={() => setForm({ ...form, interviewMode: 'offline' })}
                       className={`flex-1 px-4 py-2 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
                         form.interviewMode === 'offline'
                           ? 'bg-gradient-to-r from-lime-400 to-lime-500 text-black shadow-md'
@@ -350,27 +445,42 @@ const InterviewScheduler = () => {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send size={18} />
-                Schedule Interview
+                {loading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    Scheduling...
+                  </>
+                ) : (
+                  <>
+                    <Send size={18} />
+                    Schedule Interview
+                  </>
+                )}
               </button>
             </form>
           </div>
 
-          {/* Upcoming Interviews List */}
+          {/* Interviews Lists */}
           <div className="space-y-6">
             {/* Today's Interviews */}
-            {todayInterviews.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            {sortedTodayInterviews.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <ClockIcon size={20} />
-                    Today's Interviews ({todayInterviews.length})
-                  </h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <ClockIcon size={20} />
+                      Today's Interviews
+                    </h3>
+                    <span className="bg-white/20 px-3 py-1 rounded-full text-white text-sm font-bold">
+                      {sortedTodayInterviews.length}
+                    </span>
+                  </div>
                 </div>
-                <div className="p-4 space-y-3">
-                  {todayInterviews.map((interview) => (
+                <div className="p-4 space-y-3 max-h-[400px] overflow-y-auto">
+                  {sortedTodayInterviews.map((interview) => (
                     <InterviewCard 
                       key={interview.id} 
                       interview={interview} 
@@ -383,37 +493,51 @@ const InterviewScheduler = () => {
             )}
 
             {/* Upcoming Interviews */}
-            {upcomingInterviews.filter(i => i.interviewDate !== new Date().toISOString().split('T')[0]).length > 0 && (
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            {sortedUpcomingInterviews.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Calendar size={20} />
-                    Upcoming Interviews
-                  </h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <Calendar size={20} />
+                      Upcoming Interviews
+                    </h3>
+                    <span className="bg-white/20 px-3 py-1 rounded-full text-white text-sm font-bold">
+                      {sortedUpcomingInterviews.length}
+                    </span>
+                  </div>
                 </div>
-                <div className="p-4 space-y-3">
-                  {upcomingInterviews
-                    .filter(i => i.interviewDate !== new Date().toISOString().split('T')[0])
-                    .map((interview) => (
-                      <InterviewCard 
-                        key={interview.id} 
-                        interview={interview} 
-                        onCancel={cancelInterview}
-                        getModeIcon={getModeIcon}
-                      />
-                    ))}
+                <div className="p-4 space-y-3 max-h-[400px] overflow-y-auto">
+                  {sortedUpcomingInterviews.map((interview) => (
+                    <InterviewCard 
+                      key={interview.id} 
+                      interview={interview} 
+                      onCancel={cancelInterview}
+                      getModeIcon={getModeIcon}
+                    />
+                  ))}
                 </div>
               </div>
             )}
 
             {/* Empty State */}
             {interviews.length === 0 && (
-              <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Calendar size={32} className="text-gray-400" />
+              <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calendar size={40} className="text-gray-400" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">No interviews scheduled</h3>
                 <p className="text-gray-500">Schedule your first interview using the form</p>
+              </div>
+            )}
+
+            {/* No Upcoming Message */}
+            {interviews.length > 0 && sortedTodayInterviews.length === 0 && sortedUpcomingInterviews.length === 0 && (
+              <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle size={40} className="text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">All caught up!</h3>
+                <p className="text-gray-500">No upcoming interviews scheduled</p>
               </div>
             )}
           </div>
@@ -434,6 +558,25 @@ const InterviewScheduler = () => {
         .animate-fade-in-up {
           animation: fadeInUp 0.4s ease-out forwards;
         }
+        
+        /* Custom scrollbar */
+        .overflow-y-auto::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .overflow-y-auto::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+          background: #c1c1c1;
+          border-radius: 10px;
+        }
+        
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+          background: #a8a8a8;
+        }
       `}</style>
     </div>
   )
@@ -444,7 +587,7 @@ const InterviewCard = ({ interview, onCancel, getModeIcon }) => {
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-300">
+    <div className="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-300 hover:border-lime-200">
       <div className="flex justify-between items-start flex-wrap gap-3">
         <div className="flex-1">
           <div className="flex items-center gap-3 flex-wrap mb-2">
@@ -453,12 +596,19 @@ const InterviewCard = ({ interview, onCancel, getModeIcon }) => {
               {getModeIcon(interview.interviewMode)}
               {interview.interviewMode === 'online' ? 'Online' : 'Offline'}
             </span>
+            <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
+              interview.interviewDate === new Date().toISOString().split('T')[0] 
+                ? 'bg-orange-100 text-orange-700' 
+                : 'bg-green-100 text-green-700'
+            }`}>
+              {interview.interviewDate === new Date().toISOString().split('T')[0] ? 'Today' : 'Upcoming'}
+            </span>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
             <div className="flex items-center gap-2 text-gray-600">
               <Mail size={14} className="text-lime-500" />
-              {interview.candidateEmail}
+              <span className="truncate">{interview.candidateEmail}</span>
             </div>
             {interview.candidatePhone && (
               <div className="flex items-center gap-2 text-gray-600">
@@ -476,14 +626,14 @@ const InterviewCard = ({ interview, onCancel, getModeIcon }) => {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 mt-3 text-sm">
+          <div className="flex flex-wrap gap-4 mt-3 text-sm">
             <div className="flex items-center gap-1 text-gray-600">
               <Calendar size={14} className="text-lime-500" />
-              <span>{interview.interviewDate}</span>
+              <span className="font-medium">{interview.interviewDate}</span>
             </div>
             <div className="flex items-center gap-1 text-gray-600">
               <Clock size={14} className="text-lime-500" />
-              <span>{interview.interviewTime}</span>
+              <span className="font-medium">{interview.interviewTime}</span>
             </div>
           </div>
 
