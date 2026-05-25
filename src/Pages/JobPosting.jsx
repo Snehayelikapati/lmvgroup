@@ -56,7 +56,7 @@ const JobPosting = ({ onJobPosted }) => {
       };
 
       const response = await fetch(
-        "http://localhost:5000/api/jobs",
+        "https://w7gxb3esy3.execute-api.ap-south-1.amazonaws.com/stage/jobs",
         {
           method: "POST",
           headers: {

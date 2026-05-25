@@ -23,6 +23,7 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import supabase from "../supabase";
 
 const CandidateTracking = ({ jobs }) => {
   const [selectedJob, setSelectedJob] = useState("");
@@ -54,14 +55,14 @@ const CandidateTracking = ({ jobs }) => {
     specialization: "",
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState(null);
+  const [id, setId] = useState(null);
 
   const updateStatus = async (id, newStatus) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/candidates/${id}/status`,
+        `https://w7gxb3esy3.execute-api.ap-south-1.amazonaws.com/stage/candidate/${id}/status`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
@@ -135,7 +136,9 @@ const CandidateTracking = ({ jobs }) => {
   const uniqueJobs = [...new Set(candidateStatus.map((c) => c.appliedFor))];
   const fetchCandidates = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/candidates");
+      const response = await fetch(
+        "https://w7gxb3esy3.execute-api.ap-south-1.amazonaws.com/stage/candidate",
+      );
 
       const data = await response.json();
 
@@ -188,53 +191,72 @@ const CandidateTracking = ({ jobs }) => {
     e.preventDefault();
 
     try {
-      const formData = new FormData();
+      console.log("🔥 Form Submit Started");
 
-      Object.keys(candidateForm).forEach((key) => {
-        if (key === "skills") {
-          formData.append(
-            "skills",
-            JSON.stringify(
-              candidateForm.skills
-                ? candidateForm.skills.split(",").map((skill) => skill.trim())
-                : [],
-            ),
-          );
-        } else {
-          formData.append(key, candidateForm[key]);
-        }
-      });
+      // convert skills string into array
+      const skillsArray = candidateForm.skills
+        ? candidateForm.skills
+            .split(",")
 
-      // resume file
-      if (selectedFile) {
-        formData.append("resume", selectedFile);
-      }
+            .map((skill) => skill.trim())
+        : [];
+
+      // final payload
+      const payload = {
+        ...candidateForm,
+
+        skills: skillsArray,
+      };
+
+      console.log(payload, "FINAL PAYLOAD");
 
       let response;
 
-      // EDIT
+      // ================= UPDATE =================
       if (isEditing) {
+        console.log("✏️ EDIT MODE");
+
         response = await fetch(
-          `http://localhost:5000/api/candidates/${editingId}`,
+          `https://w7gxb3esy3.execute-api.ap-south-1.amazonaws.com/stage/candidate/${id}`,
+
           {
             method: "PUT",
-            body: formData,
+
+            headers: {
+              "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify(payload),
           },
         );
       }
 
-      // CREATE
+      // ================= CREATE =================
       else {
-        response = await fetch("http://localhost:5000/api/candidates", {
-          method: "POST",
-          body: formData,
-        });
+        console.log("🆕 CREATE MODE");
+
+        response = await fetch(
+          "https://w7gxb3esy3.execute-api.ap-south-1.amazonaws.com/stage/candidate",
+
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify(payload),
+          },
+        );
       }
+
+      console.log(response, "API RESPONSE");
 
       const data = await response.json();
 
-      console.log(data);
+      console.log(data, "RESPONSE DATA");
 
+      // ================= SUCCESS =================
       if (data.success) {
         toast.success(
           isEditing
@@ -242,40 +264,61 @@ const CandidateTracking = ({ jobs }) => {
             : "Candidate added successfully 🎉",
         );
 
+        // refresh candidates
         fetchCandidates();
 
+        // close modal
         setShowSingleForm(false);
 
-        setIsEditing(false);
-
-        setEditingId(null);
-
-        setSelectedFile(null);
-
+        // reset form
         setCandidateForm({
           name: "",
+
           email: "",
+
           phone: "",
-          resume_url: "",
-          qualification: "",
-          specialization: "",
+
           position: "",
+
+          resume_url: "",
+
           company_name: "",
+
           current_company: "",
+
           experience: "",
+
           notice_period: "",
+
           expected_salary: "",
+
           location: "",
+
           skills: "",
+
           cover_letter: "",
+
+          qualification: "",
+
+          specialization: "",
         });
-      } else {
+
+        // reset editing
+        setIsEditing(false);
+
+        setId(null);
+      }
+
+      // ================= FAILED =================
+      else {
+        console.log(data.message, "API FAILED");
+
         toast.error(data.message || "Something went wrong ❌");
       }
     } catch (error) {
-      console.log(error);
+      console.log(error, "HANDLE SUBMIT ERROR");
 
-      toast.error(error.message || "Server Error ❌");
+      toast.error("Server Error ❌");
     }
   };
   const handleEdit = (candidate) => {
@@ -285,7 +328,7 @@ const CandidateTracking = ({ jobs }) => {
       skills: candidate.skills?.join(", "),
     });
 
-    setEditingId(candidate.id);
+    setId(candidate.id);
 
     setIsEditing(true);
 
@@ -293,63 +336,58 @@ const CandidateTracking = ({ jobs }) => {
   };
 
   const handleExport = () => {
+    const csvRows = [];
 
-  const csvRows = [];
-
-  // headers
-  const headers = [
-    "Name",
-    "Email",
-    "Phone",
-    "Position",
-    "Company",
-    "Experience",
-    "Location",
-    "Qualification",
-    "Specialization",
-    "Skills",
-    "Status",
-  ];
-
-  csvRows.push(headers.join(","));
-
-  // data
-  candidateStatus.forEach((candidate) => {
-
-    const row = [
-      candidate.name,
-      candidate.email,
-      candidate.phone,
-      candidate.position,
-      candidate.company_name,
-      candidate.experience,
-      candidate.location,
-      candidate.qualification,
-      candidate.specialization,
-      candidate.skills?.join(" | "),
-      candidate.status,
+    // headers
+    const headers = [
+      "Name",
+      "Email",
+      "Phone",
+      "Position",
+      "Company",
+      "Experience",
+      "Location",
+      "Qualification",
+      "Specialization",
+      "Skills",
+      "Status",
     ];
 
-    csvRows.push(row.join(","));
-  });
+    csvRows.push(headers.join(","));
 
-  const csvData = new Blob(
-    [csvRows.join("\n")],
-    { type: "text/csv" }
-  );
+    // data
+    candidateStatus.forEach((candidate) => {
+      const row = [
+        candidate.name,
+        candidate.email,
+        candidate.phone,
+        candidate.position,
+        candidate.company_name,
+        candidate.experience,
+        candidate.location,
+        candidate.qualification,
+        candidate.specialization,
+        candidate.skills?.join(" | "),
+        candidate.status,
+      ];
 
-  const url = window.URL.createObjectURL(csvData);
+      csvRows.push(row.join(","));
+    });
 
-  const a = document.createElement("a");
+    const csvData = new Blob([csvRows.join("\n")], { type: "text/csv" });
 
-  a.href = url;
+    const url = window.URL.createObjectURL(csvData);
 
-  a.download = "candidates.csv";
+    const a = document.createElement("a");
 
-  a.click();
+    a.href = url;
 
-  window.URL.revokeObjectURL(url);
-};
+    a.download = "candidates.csv";
+
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+  };
   return (
     <div className="bg-[#f5f5f3] min-h-screen">
       {/* Header Section */}
@@ -505,9 +543,9 @@ const CandidateTracking = ({ jobs }) => {
 
             {/* Export Button */}
             <button
-  onClick={handleExport}
-  className="px-6 py-2 bg-gradient-to-r from-lime-400 to-lime-500 text-black rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2"
->
+              onClick={handleExport}
+              className="px-6 py-2 bg-gradient-to-r from-lime-400 to-lime-500 text-black rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+            >
               <Download size={18} />
               Export
             </button>
@@ -943,6 +981,7 @@ const CandidateTracking = ({ jobs }) => {
                               </div>
 
                               {/* Resume Upload */}
+                              {/* Resume Upload */}
                               <div className="md:col-span-2">
                                 <label className="block text-sm font-medium mb-2 text-gray-700">
                                   Resume Upload
@@ -952,11 +991,89 @@ const CandidateTracking = ({ jobs }) => {
                                   type="file"
                                   name="resume"
                                   accept=".pdf,.doc,.docx"
-                                  onChange={(e) =>
-                                    setSelectedFile(e.target.files[0])
-                                  }
+                                  onChange={async (e) => {
+                                    try {
+                                      const file = e.target.files[0];
+
+                                      if (!file) return;
+
+                                      console.log(file, "SELECTED FILE");
+
+                                      // unique file name
+                                      const fileName = `${Date.now()}-${file.name}`;
+
+                                      // upload file to supabase storage
+                                      const { data, error } =
+                                        await supabase.storage
+
+                                          .from("resumes")
+
+                                          .upload(fileName, file, {
+                                            cacheControl: "3600",
+                                            upsert: false,
+                                          });
+
+                                      console.log(data, "UPLOAD DATA");
+
+                                      // upload failed
+                                      if (error) {
+                                        console.log(error, "UPLOAD ERROR");
+
+                                        toast.error("Resume upload failed ❌");
+
+                                        return;
+                                      }
+
+                                      // generate public url
+                                      const { data: publicUrlData } =
+                                        supabase.storage
+
+                                          .from("resumes")
+
+                                          .getPublicUrl(fileName);
+
+                                      console.log(
+                                        publicUrlData,
+                                        "PUBLIC URL DATA",
+                                      );
+
+                                      const resumeUrl = publicUrlData.publicUrl;
+
+                                      console.log(
+                                        resumeUrl,
+                                        "FINAL RESUME URL",
+                                      );
+
+                                      // save url into form state
+                                      setCandidateForm((prev) => ({
+                                        ...prev,
+
+                                        resume_url: resumeUrl,
+                                      }));
+
+                                      toast.success(
+                                        "Resume uploaded successfully 🎉",
+                                      );
+                                    } catch (error) {
+                                      console.log(error, "RESUME UPLOAD ERROR");
+
+                                      toast.error("Resume upload failed ❌");
+                                    }
+                                  }}
                                   className="w-full border border-gray-300 rounded-xl px-4 py-3"
                                 />
+
+                                {/* preview uploaded url */}
+                                {candidateForm.resume_url && (
+                                  <a
+                                    href={candidateForm.resume_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 text-sm mt-2 inline-block underline"
+                                  >
+                                    View Uploaded Resume
+                                  </a>
+                                )}
                               </div>
 
                               {/* Submit */}
